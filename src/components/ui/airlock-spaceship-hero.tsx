@@ -50,10 +50,11 @@ export default function AirlockHero({
     let lastY = window.scrollY;
     let touchY = 0;
     let frame = 0;
+    let mediaReady = false;
 
     const paint = (progress: number) => {
       const videoProgress = clamp(progress / (scrubDistance / totalDistance), 0, 1);
-      if (duration > 0 && video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+      if (mediaReady && duration > 0 && video.readyState >= HTMLMediaElement.HAVE_METADATA) {
         video.currentTime = Math.min(videoProgress * duration, Math.max(0, duration - 0.04));
       }
       const openingOpacity = 1 - clamp(videoProgress / 0.35, 0, 1);
@@ -148,6 +149,7 @@ export default function AirlockHero({
 
     const onLoaded = () => {
       duration = video.duration || 0;
+      mediaReady = true;
       setReady(true);
       if (reducedMotion) {
         target = shown = 1;
@@ -157,11 +159,18 @@ export default function AirlockHero({
 
     const onMetadata = () => {
       duration = video.duration || 0;
+      mediaReady = true;
+      setReady(true);
+    };
+
+    const onError = () => {
+      mediaReady = false;
       setReady(true);
     };
 
     video.addEventListener("loadedmetadata", onMetadata);
     video.addEventListener("loadeddata", onLoaded);
+    video.addEventListener("error", onError);
     video.load();
     if (!reducedMotion) {
       if (window.scrollY <= section.offsetTop + 1) engage();
@@ -176,6 +185,7 @@ export default function AirlockHero({
     return () => {
       video.removeEventListener("loadeddata", onLoaded);
       video.removeEventListener("loadedmetadata", onMetadata);
+      video.removeEventListener("error", onError);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
