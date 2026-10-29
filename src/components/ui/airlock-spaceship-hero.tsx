@@ -40,7 +40,10 @@ export default function AirlockHero({
     if (!video || !section) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const totalDistance = scrubDistance + holdDistance;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const effectiveScrubDistance = isMobile ? Math.min(scrubDistance, 1250) : scrubDistance;
+    const effectiveHoldDistance = isMobile ? Math.min(holdDistance, 350) : holdDistance;
+    const totalDistance = effectiveScrubDistance + effectiveHoldDistance;
     let duration = 0;
     let target = 0;
     let shown = 0;
@@ -53,7 +56,7 @@ export default function AirlockHero({
     let mediaReady = false;
 
     const paint = (progress: number) => {
-      const videoProgress = clamp(progress / (scrubDistance / totalDistance), 0, 1);
+      const videoProgress = clamp(progress / (effectiveScrubDistance / totalDistance), 0, 1);
       if (mediaReady && duration > 0 && video.readyState >= HTMLMediaElement.HAVE_METADATA) {
         video.currentTime = Math.min(videoProgress * duration, Math.max(0, duration - 0.04));
       }
