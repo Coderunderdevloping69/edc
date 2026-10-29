@@ -160,16 +160,16 @@ export default function AirlockHero({
     const onMetadata = () => {
       duration = video.duration || 0;
       mediaReady = true;
-      setReady(true);
     };
 
     const onError = () => {
       mediaReady = false;
-      setReady(true);
+      setReady(false);
     };
 
     video.addEventListener("loadedmetadata", onMetadata);
     video.addEventListener("loadeddata", onLoaded);
+    video.addEventListener("canplay", onLoaded);
     video.addEventListener("error", onError);
     video.load();
     if (!reducedMotion) {
@@ -186,6 +186,7 @@ export default function AirlockHero({
       video.removeEventListener("loadeddata", onLoaded);
       video.removeEventListener("loadedmetadata", onMetadata);
       video.removeEventListener("error", onError);
+      video.removeEventListener("canplay", onLoaded);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
