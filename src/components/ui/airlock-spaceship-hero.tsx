@@ -199,7 +199,7 @@ export default function AirlockHero({
 
   return (
     <section ref={sectionRef} id="home" className="relative h-[100dvh] w-full overflow-hidden bg-[#05070d]">
-      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${posterSrc})` }} />
+      <img src={posterSrc} alt="" aria-hidden className="absolute inset-0 z-0 h-full w-full object-cover" />
       <video ref={videoRef} src={videoSrc} poster={posterSrc} muted playsInline preload="auto" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ opacity: ready ? 1 : 0, transition: "opacity 0.6s ease" }} />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(5,7,13,.4),transparent_35%,rgba(5,7,13,.6))]" />
       <h1 ref={titleRef} className="absolute inset-0 flex items-center justify-center px-6 text-center text-[clamp(3rem,12vw,10rem)] font-extrabold leading-none tracking-[-0.06em] text-white [text-shadow:0_4px_30px_rgba(0,0,0,.55)]">{title}</h1>
