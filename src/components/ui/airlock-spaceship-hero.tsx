@@ -116,7 +116,8 @@ export default function AirlockHero({
         release();
         return false;
       }
-      target = clamp(target + delta / totalDistance, 0, 1);
+      const inputDelta = isMobile ? clamp(delta, -70, 70) : delta;
+      target = clamp(target + inputDelta / totalDistance, 0, 1);
       return true;
     };
 
