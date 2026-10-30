@@ -89,6 +89,7 @@ export default function AirlockHero({
       if (locked) return;
       locked = true;
       released = false;
+      section.style.touchAction = "none";
       lockedY = window.scrollY;
       document.body.style.position = "fixed";
       document.body.style.top = `-${lockedY}px`;
@@ -100,6 +101,7 @@ export default function AirlockHero({
     const release = () => {
       if (!locked) return;
       locked = false;
+      section.style.touchAction = "";
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.left = "";
@@ -179,8 +181,8 @@ export default function AirlockHero({
     if (!reducedMotion) {
       if (window.scrollY <= section.offsetTop + 1) engage();
       window.addEventListener("wheel", onWheel, { passive: false });
-      window.addEventListener("touchstart", onTouchStart, { passive: true });
-      window.addEventListener("touchmove", onTouchMove, { passive: false });
+      section.addEventListener("touchstart", onTouchStart, { passive: true, capture: true });
+      section.addEventListener("touchmove", onTouchMove, { passive: false, capture: true });
       window.addEventListener("keydown", onKeyDown);
       window.addEventListener("scroll", onScroll, { passive: true });
       frame = requestAnimationFrame(animate);
@@ -192,8 +194,8 @@ export default function AirlockHero({
       video.removeEventListener("error", onError);
       video.removeEventListener("canplay", onLoaded);
       window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
+      section.removeEventListener("touchstart", onTouchStart, true);
+      section.removeEventListener("touchmove", onTouchMove, true);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(frame);
