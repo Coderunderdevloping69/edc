@@ -26,6 +26,7 @@ export default function AirlockHero({
 }: AirlockHeroProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const taglineRef = useRef<HTMLParagraphElement>(null);
   const finalLineRef = useRef<HTMLParagraphElement>(null);
@@ -53,6 +54,14 @@ export default function AirlockHero({
     let lastY = window.scrollY;
     let touchY = 0;
     let frame = 0;
+    const mobileFrames: HTMLImageElement[] = [];
+    if (isMobile) {
+      for (let index = 1; index <= 40; index += 1) {
+        const image = new Image();
+        image.src = `/assets/hero-frames/frame-${String(index).padStart(2, "0")}.jpg`;
+        mobileFrames.push(image);
+      }
+    }
     let lastSeek = -1;
 
     const seekVideo = (time: number) => {
@@ -66,7 +75,17 @@ export default function AirlockHero({
 
     const paint = (progress: number) => {
       const videoProgress = clamp(progress / (effectiveScrubDistance / totalDistance), 0, 1);
-      if (duration) seekVideo(videoProgress * duration);
+      if (isMobile && canvasRef.current) {
+        const image = mobileFrames[Math.round(videoProgress * (mobileFrames.length - 1))];
+        if (image?.complete && image.naturalWidth) {
+          const canvas = canvasRef.current;
+          canvas.width = image.naturalWidth;
+          canvas.height = image.naturalHeight;
+          canvas.getContext("2d")?.drawImage(image, 0, 0, canvas.width, canvas.height);
+        }
+      } else if (duration) {
+        seekVideo(videoProgress * duration);
+      }
       const openingOpacity = 1 - clamp(videoProgress / 0.35, 0, 1);
       const finalOpacity = clamp((videoProgress - 0.82) / 0.18, 0, 1);
       if (titleRef.current) {
@@ -203,6 +222,7 @@ export default function AirlockHero({
   return (
     <section ref={sectionRef} id="home" className="relative h-[100dvh] w-full overflow-hidden bg-[#05070d]">
       <img src={posterSrc} alt="" aria-hidden className="absolute inset-0 z-0 h-full w-full object-cover" />
+      <canvas ref={canvasRef} aria-hidden className="absolute inset-0 z-[1] h-full w-full object-cover" />
       <video ref={videoRef} src={videoSrc} poster={posterSrc} muted playsInline preload="auto" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ opacity: ready ? 1 : 0, transition: "opacity 0.6s ease" }} />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(5,7,13,.4),transparent_35%,rgba(5,7,13,.6))]" />
       <h1 ref={titleRef} className="absolute inset-0 flex items-center justify-center px-6 text-center text-[clamp(3rem,12vw,10rem)] font-extrabold leading-none tracking-[-0.06em] text-white [text-shadow:0_4px_30px_rgba(0,0,0,.55)]">{title}</h1>
