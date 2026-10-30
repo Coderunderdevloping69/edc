@@ -53,21 +53,14 @@ export default function AirlockHero({
     let lastY = window.scrollY;
     let touchY = 0;
     let frame = 0;
-    let seeking = false;
-    let queuedTime: number | null = null;
     let lastSeek = -1;
 
     const seekVideo = (time: number) => {
       if (!duration || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
-      const step = isMobile ? 0.2 : 0.04;
+      const step = isMobile ? 0.25 : 0.04;
       const next = Math.min(Math.round(time / step) * step, duration - 0.04);
       if (Math.abs(next - lastSeek) < step) return;
       lastSeek = next;
-      if (isMobile && seeking) {
-        queuedTime = next;
-        return;
-      }
-      seeking = isMobile;
       video.currentTime = next;
     };
 
@@ -159,7 +152,7 @@ export default function AirlockHero({
       }
     };
     const animate = () => {
-      shown += (target - shown) * 0.18;
+      shown += (target - shown) * (isMobile ? 0.28 : 0.18);
       paint(shown);
       frame = requestAnimationFrame(animate);
     };
@@ -175,15 +168,6 @@ export default function AirlockHero({
       }
     };
 
-    const onSeeked = () => {
-      seeking = false;
-      if (queuedTime !== null) {
-        const next = queuedTime;
-        queuedTime = null;
-        seekVideo(next);
-      }
-    };
-
     const onMetadata = () => {
       duration = video.duration || 0;
       video.pause();
@@ -192,7 +176,6 @@ export default function AirlockHero({
 
     video.addEventListener("loadeddata", onLoaded);
     video.addEventListener("loadedmetadata", onMetadata);
-    video.addEventListener("seeked", onSeeked);
     video.load();
     if (!reducedMotion) {
       if (window.scrollY <= section.offsetTop + 1) engage();
@@ -207,7 +190,6 @@ export default function AirlockHero({
     return () => {
       video.removeEventListener("loadeddata", onLoaded);
       video.removeEventListener("loadedmetadata", onMetadata);
-      video.removeEventListener("seeked", onSeeked);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
