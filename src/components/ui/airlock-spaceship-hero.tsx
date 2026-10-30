@@ -146,6 +146,8 @@ export default function AirlockHero({
 
     const onLoaded = () => {
       duration = video.duration || 0;
+      video.pause();
+      video.currentTime = 0;
       setReady(true);
       if (reducedMotion) {
         target = shown = 1;
@@ -153,7 +155,15 @@ export default function AirlockHero({
       }
     };
 
+    const onMetadata = () => {
+      duration = video.duration || 0;
+      video.pause();
+      video.currentTime = 0;
+    };
+
     video.addEventListener("loadeddata", onLoaded);
+    video.addEventListener("loadedmetadata", onMetadata);
+    video.load();
     if (!reducedMotion) {
       if (window.scrollY <= section.offsetTop + 1) engage();
       window.addEventListener("wheel", onWheel, { passive: false });
@@ -166,6 +176,7 @@ export default function AirlockHero({
 
     return () => {
       video.removeEventListener("loadeddata", onLoaded);
+      video.removeEventListener("loadedmetadata", onMetadata);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
