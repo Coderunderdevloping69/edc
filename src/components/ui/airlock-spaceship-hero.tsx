@@ -57,8 +57,9 @@ export default function AirlockHero({
 
     const seekVideo = (time: number) => {
       if (!duration || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
-      const next = Math.min(time, duration - 0.04);
-      if (Math.abs(next - lastSeek) < 0.04) return;
+      const step = isAndroid ? 0.2 : 0.04;
+      const next = Math.min(Math.round(time / step) * step, duration - 0.04);
+      if (Math.abs(next - lastSeek) < step) return;
       lastSeek = next;
       if (isAndroid && seeking) {
         queuedTime = next;
