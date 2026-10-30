@@ -40,8 +40,10 @@ export default function AirlockHero({
     if (!video || !section) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    const totalDistance = scrubDistance + holdDistance;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const effectiveScrubDistance = isMobile ? Math.min(scrubDistance, 900) : scrubDistance;
+    const effectiveHoldDistance = isMobile ? Math.min(holdDistance, 250) : holdDistance;
+    const totalDistance = effectiveScrubDistance + effectiveHoldDistance;
     let duration = 0;
     let target = 0;
     let shown = 0;
@@ -57,20 +59,20 @@ export default function AirlockHero({
 
     const seekVideo = (time: number) => {
       if (!duration || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
-      const step = isAndroid ? 0.2 : 0.04;
+      const step = isMobile ? 0.2 : 0.04;
       const next = Math.min(Math.round(time / step) * step, duration - 0.04);
       if (Math.abs(next - lastSeek) < step) return;
       lastSeek = next;
-      if (isAndroid && seeking) {
+      if (isMobile && seeking) {
         queuedTime = next;
         return;
       }
-      seeking = isAndroid;
+      seeking = isMobile;
       video.currentTime = next;
     };
 
     const paint = (progress: number) => {
-      const videoProgress = clamp(progress / (scrubDistance / totalDistance), 0, 1);
+      const videoProgress = clamp(progress / (effectiveScrubDistance / totalDistance), 0, 1);
       if (duration) seekVideo(videoProgress * duration);
       const openingOpacity = 1 - clamp(videoProgress / 0.35, 0, 1);
       const finalOpacity = clamp((videoProgress - 0.82) / 0.18, 0, 1);
