@@ -55,11 +55,27 @@ export default function AirlockHero({
     let touchProgress = 0;
     let frame = 0;
     let mediaReady = false;
+    let seeking = false;
+    let queuedTime: number | null = null;
+    let lastRequestedTime = -1;
+
+    const seekTo = (time: number) => {
+      if (!mediaReady || duration <= 0) return;
+      const nextTime = Math.min(time, Math.max(0, duration - 0.04));
+      if (Math.abs(nextTime - lastRequestedTime) < (isMobile ? 0.08 : 0.02)) return;
+      lastRequestedTime = nextTime;
+      if (seeking) {
+        queuedTime = nextTime;
+        return;
+      }
+      seeking = true;
+      video.currentTime = nextTime;
+    };
 
     const paint = (progress: number) => {
       const videoProgress = clamp(progress / (effectiveScrubDistance / totalDistance), 0, 1);
       if (mediaReady && duration > 0 && video.readyState >= HTMLMediaElement.HAVE_METADATA) {
-        video.currentTime = Math.min(videoProgress * duration, Math.max(0, duration - 0.04));
+        seekTo(videoProgress * duration);
       }
       const openingOpacity = 1 - clamp(videoProgress / 0.35, 0, 1);
       const finalOpacity = clamp((videoProgress - 0.82) / 0.18, 0, 1);
@@ -175,6 +191,15 @@ export default function AirlockHero({
       }
     };
 
+    const onSeeked = () => {
+      seeking = false;
+      if (queuedTime !== null) {
+        const nextTime = queuedTime;
+        queuedTime = null;
+        seekTo(nextTime);
+      }
+    };
+
     const onMetadata = () => {
       duration = video.duration || 0;
       mediaReady = true;
@@ -188,6 +213,7 @@ export default function AirlockHero({
     video.addEventListener("loadedmetadata", onMetadata);
     video.addEventListener("loadeddata", onLoaded);
     video.addEventListener("canplay", onLoaded);
+    video.addEventListener("seeked", onSeeked);
     video.addEventListener("error", onError);
     video.load();
     if (!reducedMotion) {
@@ -205,6 +231,7 @@ export default function AirlockHero({
       video.removeEventListener("loadedmetadata", onMetadata);
       video.removeEventListener("error", onError);
       video.removeEventListener("canplay", onLoaded);
+      video.removeEventListener("seeked", onSeeked);
       window.removeEventListener("wheel", onWheel);
       section.removeEventListener("touchstart", onTouchStart, true);
       section.removeEventListener("touchmove", onTouchMove, true);
