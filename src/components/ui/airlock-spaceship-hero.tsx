@@ -41,8 +41,8 @@ export default function AirlockHero({
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    const effectiveScrubDistance = isMobile ? Math.max(scrubDistance, 1600) : scrubDistance;
-    const effectiveHoldDistance = isMobile ? Math.max(holdDistance, 600) : holdDistance;
+    const effectiveScrubDistance = isMobile ? Math.max(scrubDistance, 1000) : scrubDistance;
+    const effectiveHoldDistance = isMobile ? Math.max(holdDistance, 250) : holdDistance;
     const totalDistance = effectiveScrubDistance + effectiveHoldDistance;
     let duration = 0;
     let target = 0;
@@ -57,7 +57,7 @@ export default function AirlockHero({
 
     const seekVideo = (time: number) => {
       if (!duration || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
-      const step = isMobile ? 0.18 : 0.04;
+      const step = isMobile ? 0.12 : 0.04;
       const next = Math.min(Math.round(time / step) * step, duration - 0.04);
       if (Math.abs(next - lastSeek) < step) return;
       lastSeek = next;
@@ -74,12 +74,12 @@ export default function AirlockHero({
       if (titleRef.current) {
         titleRef.current.style.opacity = String(openingOpacity);
         titleRef.current.style.transform = `translateY(${(1 - openingOpacity) * -24}px) scale(${0.96 + openingOpacity * 0.04})`;
-        titleRef.current.style.filter = `blur(${(1 - openingOpacity) * 10}px)`;
+        titleRef.current.style.filter = isMobile ? "none" : `blur(${(1 - openingOpacity) * 10}px)`;
       }
       if (taglineRef.current) {
         taglineRef.current.style.opacity = String(openingOpacity);
         taglineRef.current.style.transform = `translate(-50%, calc(5rem + ${(1 - openingOpacity) * -16}px))`;
-        taglineRef.current.style.filter = `blur(${(1 - openingOpacity) * 8}px)`;
+        taglineRef.current.style.filter = isMobile ? "none" : `blur(${(1 - openingOpacity) * 8}px)`;
       }
       if (logoRef.current) {
         logoRef.current.style.opacity = String(finalOpacity);
@@ -88,7 +88,7 @@ export default function AirlockHero({
       if (finalLineRef.current) {
         finalLineRef.current.style.opacity = String(finalOpacity);
         finalLineRef.current.style.transform = `translate(-50%, calc(-50% + 5rem + ${(1 - finalOpacity) * 20}px))`;
-        finalLineRef.current.style.filter = `blur(${(1 - finalOpacity) * 8}px)`;
+        finalLineRef.current.style.filter = isMobile ? "none" : `blur(${(1 - finalOpacity) * 8}px)`;
       }
       if (hintRef.current) hintRef.current.style.opacity = progress > 0.001 ? "0" : "1";
       if (barRef.current) barRef.current.style.transform = `scaleX(${progress})`;
@@ -154,7 +154,7 @@ export default function AirlockHero({
       }
     };
     const animate = () => {
-      shown += (target - shown) * (isMobile ? 0.12 : 0.18);
+      shown += (target - shown) * (isMobile ? 0.24 : 0.18);
       paint(shown);
       frame = requestAnimationFrame(animate);
     };
