@@ -54,14 +54,31 @@ export default function AirlockHero({
     let touchY = 0;
     let frame = 0;
     let lastSeek = -1;
+    let pendingSeek = -1;
+    let seeking = false;
 
     const seekVideo = (time: number) => {
       if (!duration || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
       const step = isMobile ? 0.12 : 0.04;
       const next = Math.min(Math.round(time / step) * step, duration - 0.04);
       if (Math.abs(next - lastSeek) < step) return;
+      pendingSeek = next;
+      if (seeking) return;
       lastSeek = next;
+      pendingSeek = -1;
+      seeking = true;
       video.currentTime = next;
+    };
+
+    const onSeeked = () => {
+      seeking = false;
+      if (pendingSeek >= 0) {
+        const next = pendingSeek;
+        pendingSeek = -1;
+        lastSeek = next;
+        seeking = true;
+        video.currentTime = next;
+      }
     };
 
     const paint = (progress: number) => {
@@ -178,6 +195,7 @@ export default function AirlockHero({
 
     video.addEventListener("loadeddata", onLoaded);
     video.addEventListener("loadedmetadata", onMetadata);
+    video.addEventListener("seeked", onSeeked);
     video.load();
     if (!reducedMotion) {
       if (window.scrollY <= section.offsetTop + 1) engage();
@@ -192,6 +210,7 @@ export default function AirlockHero({
     return () => {
       video.removeEventListener("loadeddata", onLoaded);
       video.removeEventListener("loadedmetadata", onMetadata);
+      video.removeEventListener("seeked", onSeeked);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
