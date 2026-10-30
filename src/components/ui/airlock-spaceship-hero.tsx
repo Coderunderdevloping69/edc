@@ -66,7 +66,7 @@ export default function AirlockHero({
 
     const paint = (progress: number) => {
       const videoProgress = clamp(progress / (effectiveScrubDistance / totalDistance), 0, 1);
-      if (duration) seekVideo(videoProgress * duration);
+      if (duration && !isMobile) seekVideo(videoProgress * duration);
       const openingOpacity = 1 - clamp(videoProgress / 0.35, 0, 1);
       const finalOpacity = clamp((videoProgress - 0.82) / 0.18, 0, 1);
       if (titleRef.current) {
@@ -162,6 +162,11 @@ export default function AirlockHero({
       video.pause();
       video.currentTime = 0;
       setReady(true);
+      if (isMobile) {
+        void video.play().catch(() => {
+          // Keep the poster when mobile autoplay is unavailable.
+        });
+      }
       if (reducedMotion) {
         target = shown = 1;
         paint(1);
@@ -203,7 +208,7 @@ export default function AirlockHero({
   return (
     <section ref={sectionRef} id="home" className="relative h-[100dvh] w-full overflow-hidden bg-[#05070d]">
       <img src={posterSrc} alt="" aria-hidden className="absolute inset-0 z-0 h-full w-full object-cover" />
-      <video ref={videoRef} src={videoSrc} poster={posterSrc} muted playsInline preload="auto" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ opacity: ready ? 1 : 0, transition: "opacity 0.6s ease" }} />
+      <video ref={videoRef} src={videoSrc} poster={posterSrc} muted playsInline autoPlay preload="auto" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ opacity: ready ? 1 : 0, transition: "opacity 0.6s ease" }} />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(5,7,13,.4),transparent_35%,rgba(5,7,13,.6))]" />
       <h1 ref={titleRef} className="absolute inset-0 flex items-center justify-center px-6 text-center text-[clamp(3rem,12vw,10rem)] font-extrabold leading-none tracking-[-0.06em] text-white [text-shadow:0_4px_30px_rgba(0,0,0,.55)]">{title}</h1>
       <p ref={taglineRef} className="absolute left-1/2 top-1/2 w-full px-8 text-center text-[clamp(1.25rem,3.4vw,2.5rem)] font-bold leading-tight text-white opacity-0 [text-shadow:0_4px_24px_rgba(0,0,0,.6)]" style={{ transform: "translate(-50%, 5rem)" }}>{tagline}</p>
