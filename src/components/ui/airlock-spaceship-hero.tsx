@@ -56,7 +56,6 @@ export default function AirlockHero({
     let frame = 0;
     let mediaReady = false;
     let seeking = false;
-    let queuedTime: number | null = null;
     let lastRequestedTime = -1;
 
     const seekTo = (time: number) => {
@@ -64,10 +63,7 @@ export default function AirlockHero({
       const nextTime = Math.min(time, Math.max(0, duration - 0.04));
       if (Math.abs(nextTime - lastRequestedTime) < (isMobile ? 0.16 : 0.02)) return;
       lastRequestedTime = nextTime;
-      if (seeking) {
-        queuedTime = nextTime;
-        return;
-      }
+      if (seeking) return;
       seeking = true;
       video.currentTime = nextTime;
     };
@@ -193,11 +189,8 @@ export default function AirlockHero({
 
     const onSeeked = () => {
       seeking = false;
-      if (queuedTime !== null) {
-        const nextTime = queuedTime;
-        queuedTime = null;
-        seekTo(nextTime);
-      }
+      const currentProgress = clamp(shown / (effectiveScrubDistance / totalDistance), 0, 1);
+      seekTo(currentProgress * duration);
     };
 
     const onMetadata = () => {
