@@ -2,6 +2,7 @@ import { ArrowUpRight, Instagram, Linkedin } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import AirlockHero from "@/components/ui/airlock-spaceship-hero";
+import PolaroidLineCarousel from "@/components/ui/polaroid-line-carousel";
 
 const upcomingEvents = [
   { date: "08 NOV", title: "Startup Weekend", detail: "48 hours to build your idea" },
@@ -10,9 +11,9 @@ const upcomingEvents = [
 ];
 
 const pastEvents = [
-  { date: "18—20 OCT 2024", title: "E-Summit 2024", type: "Summit", image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1000&q=80" },
-  { date: "07 SEP 2024", title: "Ideathon", type: "Competition", image: "https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1000&q=80" },
-  { date: "14 AUG 2024", title: "Design thinking lab", type: "Workshop", image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1000&q=80" },
+  { date: "18—20 OCT 2024", title: "E-Summit 2024", type: "Summit", image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1000&q=80", caption: "Three days of ideas, pitches, and ambitious builders." },
+  { date: "07 SEP 2024", title: "Ideathon", type: "Competition", image: "https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1000&q=80", caption: "A room full of problems worth solving." },
+  { date: "14 AUG 2024", title: "Design thinking lab", type: "Workshop", image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1000&q=80", caption: "From first questions to better possibilities." },
 ];
 
 const team = [
@@ -109,7 +110,7 @@ function HomePage() {
 
     <section id="past-events" className="px-5 py-24 sm:px-8 md:px-12 md:py-32">
       <div className="mb-12 flex items-end justify-between border-b border-cream/20 pb-5"><h2 className="text-5xl tracking-[-0.07em] text-cream sm:text-7xl">Past events</h2><span className="eyebrow text-cream/50">03 / The archive</span></div>
-      <div className="grid gap-10 md:grid-cols-3">{pastEvents.map((event) => <article key={event.title} className="group"><div className="mb-4 aspect-[4/5] overflow-hidden"><img src={event.image} alt={event.title} className="h-full w-full object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0" /></div><div className="flex justify-between border-b border-cream/20 pb-3 text-sm text-cream"><span>{event.title}</span><span className="eyebrow text-cream/50">{event.type}</span></div><p className="eyebrow mt-3 text-cream/50">{event.date}</p></article>)}</div>
+      <PolaroidLineCarousel slides={pastEvents} className="mt-4" />
     </section>
 
     <section id="faqs" className="bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28">
