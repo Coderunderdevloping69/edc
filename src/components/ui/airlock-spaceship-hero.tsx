@@ -41,8 +41,8 @@ export default function AirlockHero({
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    const effectiveScrubDistance = isMobile ? Math.max(scrubDistance, 1000) : scrubDistance;
-    const effectiveHoldDistance = isMobile ? Math.max(holdDistance, 250) : holdDistance;
+    const effectiveScrubDistance = isMobile ? Math.min(scrubDistance, 700) : scrubDistance;
+    const effectiveHoldDistance = isMobile ? Math.min(holdDistance, 120) : holdDistance;
     const totalDistance = effectiveScrubDistance + effectiveHoldDistance;
     let duration = 0;
     let target = 0;
@@ -154,7 +154,7 @@ export default function AirlockHero({
       }
     };
     const animate = () => {
-      shown += (target - shown) * (isMobile ? 0.24 : 0.18);
+      shown += (target - shown) * (isMobile ? 0.42 : 0.18);
       paint(shown);
       frame = requestAnimationFrame(animate);
     };
