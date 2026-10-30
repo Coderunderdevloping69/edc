@@ -52,6 +52,7 @@ export default function AirlockHero({
     let lockedY = 0;
     let lastY = window.scrollY;
     let touchY = 0;
+    let touchProgress = 0;
     let frame = 0;
     let mediaReady = false;
 
@@ -126,10 +127,21 @@ export default function AirlockHero({
     const onWheel = (event: WheelEvent) => {
       if (consume(event.deltaY)) event.preventDefault();
     };
-    const onTouchStart = (event: TouchEvent) => { touchY = event.touches[0]?.clientY ?? 0; };
+    const onTouchStart = (event: TouchEvent) => {
+      touchY = event.touches[0]?.clientY ?? 0;
+      touchProgress = 0;
+    };
     const onTouchMove = (event: TouchEvent) => {
       const y = event.touches[0]?.clientY ?? touchY;
-      if (consume(touchY - y)) event.preventDefault();
+      const delta = touchY - y;
+      const remainingGesture = 320 - touchProgress;
+      const acceptedDelta = isMobile
+        ? Math.sign(delta) * Math.min(Math.abs(delta), Math.max(0, remainingGesture))
+        : delta;
+      if (consume(acceptedDelta)) {
+        touchProgress += Math.abs(acceptedDelta);
+        event.preventDefault();
+      }
       touchY = y;
     };
     const onKeyDown = (event: KeyboardEvent) => {
