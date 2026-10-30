@@ -40,6 +40,7 @@ export default function AirlockHero({
     if (!video || !section) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isAndroid = /Android/i.test(navigator.userAgent);
     const totalDistance = scrubDistance + holdDistance;
     let duration = 0;
     let target = 0;
@@ -50,10 +51,26 @@ export default function AirlockHero({
     let lastY = window.scrollY;
     let touchY = 0;
     let frame = 0;
+    let seeking = false;
+    let queuedTime: number | null = null;
+    let lastSeek = -1;
+
+    const seekVideo = (time: number) => {
+      if (!duration || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
+      const next = Math.min(time, duration - 0.04);
+      if (Math.abs(next - lastSeek) < 0.04) return;
+      lastSeek = next;
+      if (isAndroid && seeking) {
+        queuedTime = next;
+        return;
+      }
+      seeking = isAndroid;
+      video.currentTime = next;
+    };
 
     const paint = (progress: number) => {
       const videoProgress = clamp(progress / (scrubDistance / totalDistance), 0, 1);
-      if (duration) video.currentTime = Math.min(videoProgress * duration, duration - 0.04);
+      if (duration) seekVideo(videoProgress * duration);
       const openingOpacity = 1 - clamp(videoProgress / 0.35, 0, 1);
       const finalOpacity = clamp((videoProgress - 0.82) / 0.18, 0, 1);
       if (titleRef.current) {
@@ -155,6 +172,15 @@ export default function AirlockHero({
       }
     };
 
+    const onSeeked = () => {
+      seeking = false;
+      if (queuedTime !== null) {
+        const next = queuedTime;
+        queuedTime = null;
+        seekVideo(next);
+      }
+    };
+
     const onMetadata = () => {
       duration = video.duration || 0;
       video.pause();
@@ -163,6 +189,7 @@ export default function AirlockHero({
 
     video.addEventListener("loadeddata", onLoaded);
     video.addEventListener("loadedmetadata", onMetadata);
+    video.addEventListener("seeked", onSeeked);
     video.load();
     if (!reducedMotion) {
       if (window.scrollY <= section.offsetTop + 1) engage();
@@ -177,6 +204,7 @@ export default function AirlockHero({
     return () => {
       video.removeEventListener("loadeddata", onLoaded);
       video.removeEventListener("loadedmetadata", onMetadata);
+      video.removeEventListener("seeked", onSeeked);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
