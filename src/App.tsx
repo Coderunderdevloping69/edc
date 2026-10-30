@@ -2,7 +2,7 @@ import { ArrowUpRight, Instagram, Linkedin } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import AirlockHero from "@/components/ui/airlock-spaceship-hero";
-import PolaroidLineCarousel from "@/components/ui/polaroid-line-carousel";
+import DriftWall from "@/components/ui/polaroid-line-carousel";
 
 const upcomingEvents = [
   { date: "08 NOV", title: "Startup Weekend", detail: "48 hours to build your idea" },
@@ -110,7 +110,27 @@ function HomePage() {
 
     <section id="past-events" className="px-5 py-24 sm:px-8 md:px-12 md:py-32">
       <div className="mb-12 flex items-end justify-between border-b border-cream/20 pb-5"><h2 className="text-5xl tracking-[-0.07em] text-cream sm:text-7xl">Past events</h2><span className="eyebrow text-cream/50">03 / The archive</span></div>
-      <PolaroidLineCarousel slides={pastEvents} className="mt-4" />
+      <div className="mt-4 h-[36rem] overflow-hidden bg-[#060010] sm:h-[42rem]">
+        <DriftWall
+          items={pastEvents}
+          columns={5}
+          tileWidth={200}
+          tileHeight={132}
+          gap={18}
+          tilt={16}
+          turn={-14}
+          perspective={1200}
+          depth={120}
+          speed={34}
+          direction="up"
+          variance={0.45}
+          parallax={0.6}
+          lift={64}
+          fade={0.6}
+          dim={0.55}
+          overlayColor="#060010"
+        />
+      </div>
     </section>
 
     <section id="faqs" className="bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28">

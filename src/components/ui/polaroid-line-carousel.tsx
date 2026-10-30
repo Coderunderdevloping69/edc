@@ -1,104 +1,176 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import "./polaroid-line-carousel.css";
 
-export type PolaroidSlide = {
-  image: string;
-  title: string;
-  caption?: string;
-  alt?: string;
-};
+export type DriftItem = { image: string; title?: string; href?: string };
 
-type PolaroidLineCarouselProps = {
-  slides: PolaroidSlide[];
+type DriftWallProps = {
+  items: DriftItem[];
+  columns?: number;
+  tileWidth?: number;
+  tileHeight?: number;
+  gap?: number;
+  radius?: number;
+  tilt?: number;
+  turn?: number;
+  roll?: number;
+  perspective?: number;
+  depth?: number;
+  speed?: number;
+  direction?: "up" | "down";
+  variance?: number;
+  parallax?: number;
+  pauseOnHover?: boolean;
+  lift?: number;
+  fade?: number;
+  dim?: number;
+  grayscale?: boolean;
+  overlayColor?: string;
   className?: string;
+  style?: React.CSSProperties;
 };
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const columnFactor = (index: number, variance: number) => 1 + variance * ((((index * 0.6180339887 + 0.35) % 1) * 2) - 1);
 
-export default function PolaroidLineCarousel({ slides, className = "" }: PolaroidLineCarouselProps) {
-  const [active, setActive] = useState(0);
-  const [offset, setOffset] = useState(0);
-  const startX = useRef<number | null>(null);
+export default function DriftWall({
+  items,
+  columns = 5,
+  tileWidth = 200,
+  tileHeight = 132,
+  gap = 18,
+  radius = 14,
+  tilt = 16,
+  turn = -14,
+  roll = 0,
+  perspective = 1200,
+  depth = 120,
+  speed = 42,
+  direction = "up",
+  variance = 0.45,
+  parallax = 0.6,
+  pauseOnHover = false,
+  lift = 64,
+  fade = 0.6,
+  dim = 0.55,
+  grayscale = false,
+  overlayColor = "#060010",
+  className = "",
+  style,
+}: DriftWallProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const planeRef = useRef<HTMLDivElement>(null);
+  const tracks = useRef<(HTMLDivElement | null)[]>([]);
+  const offsets = useRef<number[]>([]);
+  const velocities = useRef<number[]>([]);
+  const pointer = useRef({ x: 0, y: 0 });
+  const dampedPointer = useRef({ x: 0, y: 0 });
+  const hoveredColumn = useRef(-1);
+  const hovered = useRef(false);
+  const raf = useRef<number | null>(null);
+  const lastTime = useRef<number | null>(null);
+  const [height, setHeight] = useState(600);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [reduced, setReduced] = useState(false);
+
+  const columnItems = useMemo(() => {
+    const result = Array.from({ length: Math.max(1, columns) }, () => [] as DriftItem[]);
+    items.forEach((item, index) => result[index % result.length].push(item));
+    return result;
+  }, [columns, items]);
+  const metas = useMemo(() => columnItems.map((column) => {
+    const copyHeight = Math.max(tileHeight + gap, column.length * (tileHeight + gap));
+    return { copyHeight, copies: Math.max(2, Math.ceil((height * 1.6) / copyHeight) + 1) };
+  }), [columnItems, gap, height, tileHeight]);
+  const baseVelocities = useMemo(() => columnItems.map((_, index) => {
+    const sign = direction === "up" ? 1 : -1;
+    return speed * columnFactor(index, variance) * sign * (index % 2 === 0 ? 1 : -1);
+  }), [columnItems, direction, speed, variance]);
+
+  useLayoutEffect(() => {
+    const element = containerRef.current;
+    if (!element) return;
+    const observer = new ResizeObserver(([entry]) => setHeight(entry.contentRect.height || 600));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
-    setOffset(active);
-  }, [active]);
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
 
-  if (!slides.length) return null;
+  useEffect(() => {
+    offsets.current = metas.map((meta, index) => meta.copyHeight * ((index * 0.37) % 1));
+    velocities.current = columnItems.map(() => 0);
+  }, [columnItems, metas]);
 
-  const select = (index: number) => {
-    const next = clamp(index, 0, slides.length - 1);
-    setActive(next);
-  };
+  const applyTransform = useCallback((x: number, y: number) => {
+    if (planeRef.current) {
+      planeRef.current.style.transform = `translate(-50%, -50%) scale(1.18) rotateX(${tilt + y}deg) rotateY(${turn + x}deg) rotateZ(${roll}deg) translateZ(${-depth}px)`;
+    }
+  }, [depth, roll, tilt, turn]);
 
-  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    startX.current = event.clientX;
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
+  useEffect(() => {
+    const animate = (time: number) => {
+      if (lastTime.current === null) lastTime.current = time;
+      const dt = Math.min(0.05, Math.max(0, time - lastTime.current) / 1000);
+      lastTime.current = time;
+      const damp = 1 - Math.exp(-dt / 0.12);
+      dampedPointer.current.x += (pointer.current.x * parallax * 8 - dampedPointer.current.x) * damp;
+      dampedPointer.current.y += (-pointer.current.y * parallax * 8 - dampedPointer.current.y) * damp;
+      applyTransform(dampedPointer.current.x, dampedPointer.current.y);
+      if (!reduced) tracks.current.forEach((track, index) => {
+        const meta = metas[index];
+        if (!track || !meta) return;
+        const paused = hovered.current && pauseOnHover;
+        const target = paused || hoveredColumn.current === index ? 0 : baseVelocities[index];
+        velocities.current[index] += (target - velocities.current[index]) * (1 - Math.exp(-dt / (target ? 0.28 : 0.16)));
+        offsets.current[index] = ((offsets.current[index] + velocities.current[index] * dt) % meta.copyHeight + meta.copyHeight) % meta.copyHeight;
+        track.style.transform = `translate3d(0, ${-offsets.current[index]}px, 0)`;
+      });
+      raf.current = requestAnimationFrame(animate);
+    };
+    raf.current = requestAnimationFrame(animate);
+    return () => { if (raf.current) cancelAnimationFrame(raf.current); lastTime.current = null; };
+  }, [applyTransform, baseVelocities, metas, parallax, pauseOnHover, reduced]);
 
-  const onPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (startX.current === null) return;
-    const distance = event.clientX - startX.current;
-    startX.current = null;
-    if (Math.abs(distance) > 40) select(active + (distance < 0 ? 1 : -1));
-  };
+  const cssVars = {
+    "--dw-tile-w": `${tileWidth}px`, "--dw-tile-h": `${tileHeight}px`, "--dw-gap": `${gap}px`,
+    "--dw-radius": `${radius}px`, "--dw-perspective": `${perspective}px`, "--dw-lift": `${lift}px`,
+    "--dw-dim": dim, "--dw-gray": grayscale ? 1 : 0, "--dw-overlay": overlayColor,
+    "--dw-edge": `${Math.max(0, (1 - fade) * 100)}%`, ...style,
+  } as React.CSSProperties;
 
   return (
     <div
-      className={`polaroid-carousel ${className}`}
-      onPointerDown={onPointerDown}
-      onPointerUp={onPointerUp}
-      onPointerCancel={() => { startX.current = null; }}
-      role="region"
-      aria-label="Past events gallery"
+      ref={containerRef}
+      className={`drift-wall ${reduced ? "drift-wall--reduced" : ""} ${className}`}
+      style={cssVars}
+      onPointerMove={(event) => {
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (rect && parallax > 0 && !reduced) pointer.current = { x: (event.clientX - rect.left) / rect.width - 0.5, y: (event.clientY - rect.top) / rect.height - 0.5 };
+        const tile = (event.target as HTMLElement).closest<HTMLElement>("[data-tile-id]");
+        if (tile) { hoveredColumn.current = Number(tile.dataset.col); setActiveId(tile.dataset.tileId ?? null); }
+      }}
+      onPointerEnter={() => { hovered.current = true; }}
+      onPointerLeave={() => { hovered.current = false; hoveredColumn.current = -1; pointer.current = { x: 0, y: 0 }; setActiveId(null); }}
+      role="group"
+      aria-label="Drifting wall of past events"
     >
-      <style>{`
-        .polaroid-carousel { position: relative; min-height: 34rem; overflow: hidden; color: #161513; background: #e9e4dc; user-select: none; touch-action: pan-y; }
-        .polaroid-carousel::before { content: ""; position: absolute; left: 0; right: 0; top: 19%; height: 2px; background: rgba(91, 77, 61, .38); transform: rotate(-1deg); }
-        .polaroid-track { position: absolute; inset: 0; }
-        .polaroid-card { position: absolute; top: 22%; left: 50%; width: min(68vw, 18rem); padding: .7rem .7rem 0; background: #fbfaf7; box-shadow: 0 1px 2px rgba(0,0,0,.15), 0 20px 34px -18px rgba(0,0,0,.55); transform-origin: 50% 0; transition: transform .6s cubic-bezier(.2,.8,.2,1), opacity .45s ease, filter .45s ease; }
-        .polaroid-card[data-active="false"] { filter: saturate(.55) brightness(.92); opacity: .7; }
-        .polaroid-photo { aspect-ratio: 1 / 1.08; overflow: hidden; background: #d9d5cc; }
-        .polaroid-photo img { width: 100%; height: 100%; display: block; object-fit: cover; }
-        .polaroid-title { height: 4.2rem; display: flex; align-items: center; justify-content: center; padding: 0 .4rem; overflow: hidden; text-align: center; font: italic 400 1rem/1.1 Georgia, serif; }
-        .polaroid-peg { position: absolute; left: 50%; top: -1.05rem; width: .65rem; height: 1.6rem; border-radius: .15rem; background: linear-gradient(90deg, #b8915f, #e3c9a1 45%, #a67d4c); transform: translateX(-50%); }
-        .polaroid-meta { position: absolute; left: 1.25rem; right: 1.25rem; bottom: 1.25rem; display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
-        .polaroid-caption { max-width: 22rem; font-size: .8rem; line-height: 1.35; color: rgba(22,21,19,.62); }
-        .polaroid-count { font: .75rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; white-space: nowrap; color: rgba(22,21,19,.62); }
-        .polaroid-controls { position: absolute; right: 1.25rem; top: 1.25rem; display: flex; gap: .5rem; }
-        .polaroid-button { width: 2.4rem; height: 2.4rem; border: 1px solid rgba(22,21,19,.25); border-radius: 999px; background: transparent; color: inherit; cursor: pointer; }
-        .polaroid-button:hover { background: #161513; color: #e9e4dc; }
-        @media (min-width: 768px) { .polaroid-carousel { min-height: 42rem; } .polaroid-card { width: min(28vw, 20rem); } }
-      `}</style>
-      <div className="polaroid-track">
-        {slides.map((slide, index) => {
-          const distance = index - offset;
-          const rotation = distance * 5;
-          const x = distance * 72;
-          return (
-            <article
-              key={slide.title}
-              className="polaroid-card"
-              data-active={index === active}
-              style={{
-                transform: `translateX(calc(-50% + ${x}vw)) rotate(${rotation}deg) scale(${index === active ? 1 : .86})`,
-                zIndex: slides.length - Math.abs(distance),
-              }}
-              aria-hidden={index === active ? undefined : true}
-            >
-              <span className="polaroid-peg" />
-              <div className="polaroid-photo"><img src={slide.image} alt={slide.alt ?? slide.title} draggable={false} /></div>
-              <div className="polaroid-title">{slide.title}</div>
-            </article>
-          );
-        })}
-      </div>
-      <div className="polaroid-controls">
-        <button type="button" className="polaroid-button" aria-label="Previous event" onClick={() => select(active - 1)}>←</button>
-        <button type="button" className="polaroid-button" aria-label="Next event" onClick={() => select(active + 1)}>→</button>
-      </div>
-      <div className="polaroid-meta">
-        <p className="polaroid-caption">{slides[active].caption}</p>
-        <span className="polaroid-count">{String(active + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}</span>
+      <div ref={planeRef} className="drift-wall__plane">
+        {columnItems.map((column, columnIndex) => (
+          <div className="drift-wall__col" key={columnIndex}>
+            <div className="drift-wall__track" ref={(element) => { tracks.current[columnIndex] = element; }}>
+              {Array.from({ length: metas[columnIndex].copies }).flatMap((_, copyIndex) => column.map((item, itemIndex) => {
+                const id = `${columnIndex}-${copyIndex}-${itemIndex}`;
+                const content = <span className="drift-wall__inner"><img src={item.image} alt={item.title ?? ""} loading="lazy" decoding="async" draggable={false} /><span className="drift-wall__overlay" /></span>;
+                return item.href ? <a key={id} href={item.href} target="_blank" rel="noreferrer" className={`drift-wall__tile${activeId === id ? " is-active" : ""}`} data-tile-id={id} data-col={columnIndex}>{content}</a> : <div key={id} tabIndex={0} role="button" aria-label={item.title ?? "event"} className={`drift-wall__tile${activeId === id ? " is-active" : ""}`} data-tile-id={id} data-col={columnIndex}>{content}</div>;
+              }))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
