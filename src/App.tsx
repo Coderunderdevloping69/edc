@@ -16,9 +16,12 @@ const pastEvents = [
 ];
 
 const team = [
-  { name: "Aarav Mehta", role: "President", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80" },
-  { name: "Ananya Shah", role: "Vice President", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80" },
-  { name: "Rohan Kapoor", role: "Operations Lead", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80" },
+  { name: "EDC Member 01", role: "Core team", image: "/assets/team/member-01.jpeg" },
+  { name: "EDC Member 02", role: "Core team", image: "/assets/team/member-02.jpeg" },
+  { name: "EDC Member 03", role: "Core team", image: "/assets/team/member-03.jpeg" },
+  { name: "EDC Member 04", role: "Core team", image: "/assets/team/member-04.jpeg" },
+  { name: "EDC Member 05", role: "Core team", image: "/assets/team/member-05.jpeg" },
+  { name: "EDC Member 06", role: "Core team", image: "/assets/team/member-06.jpeg" },
 ];
 
 function Header() {
