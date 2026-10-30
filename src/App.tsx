@@ -72,7 +72,7 @@ function TeamPage() {
 
 function ResourcesPage() {
   const resources = ["How to find your first customer", "A founder’s guide to asking better questions", "5 books that changed how we build"];
-  return <><PageIntro number="03" eyebrow="Keep exploring" title="A library for the next big idea." /><section className="bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28">{resources.map((title, index) => <a href="#contact" key={title} className="group flex items-center justify-between border-b border-ink/20 py-7"><div><p className="eyebrow mb-3 text-ink/50">0{index + 1} / Journal</p><h2 className="text-2xl tracking-[-0.05em] sm:text-4xl">{title}</h2></div><ArrowUpRight className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" /></a>)}</section></>;
+  return <><PageIntro number="03" eyebrow="Keep exploring" title="A library for the next big idea." /><section className="dots-pattern bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28">{resources.map((title, index) => <a href="#contact" key={title} className="group flex items-center justify-between border-b border-ink/20 py-7"><div><p className="eyebrow mb-3 text-ink/50">0{index + 1} / Journal</p><h2 className="text-2xl tracking-[-0.05em] sm:text-4xl">{title}</h2></div><ArrowUpRight className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" /></a>)}</section></>;
 }
 
 function ContactPage() {
@@ -97,7 +97,7 @@ function HomePage() {
       <p className="mt-20 max-w-xl border-t border-cream/20 pt-6 text-lg leading-tight text-cream/70">EDC is the launchpad for student entrepreneurs. We connect people to mentors, resources, and a community that makes ambitious ideas feel possible.</p>
     </section>
 
-    <section id="what-we-do" className="bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28">
+    <section id="what-we-do" className="dots-pattern bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28">
       <div className="grid grid-cols-12 gap-8">
         <p className="eyebrow col-span-12 text-ink/50 md:col-span-3">02 / What we do</p>
         <div className="col-span-12 md:col-span-9">
@@ -114,7 +114,7 @@ function HomePage() {
       <PolaroidLineCarousel slides={pastEvents} className="mt-4" />
     </section>
 
-    <section id="faqs" className="bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28">
+    <section id="faqs" className="dots-pattern bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28">
       <div className="grid grid-cols-12 gap-8"><p className="eyebrow col-span-12 text-ink/50 md:col-span-3">04 / FAQs</p><div className="col-span-12 md:col-span-9"><h2 className="mb-12 text-5xl tracking-[-0.07em] sm:text-7xl">Questions, answered.</h2>{faqs.map(([question, answer]) => <details key={question} className="group border-t border-ink/20 py-6"><summary className="flex cursor-pointer list-none items-center justify-between text-xl tracking-[-0.04em] sm:text-2xl">{question}<span className="text-2xl transition-transform group-open:rotate-45">+</span></summary><p className="max-w-xl pt-4 text-sm leading-relaxed text-ink/65">{answer}</p></details>)}</div></div>
     </section>
 
@@ -122,7 +122,7 @@ function HomePage() {
       <div className="grid grid-cols-12 gap-8"><p className="eyebrow col-span-12 text-cream/50 md:col-span-3">05 / Have an idea?</p><div className="col-span-12 md:col-span-9"><h2 className="max-w-5xl text-5xl leading-[0.9] tracking-[-0.07em] text-cream sm:text-7xl md:text-9xl">Make it <span className="text-white">real.</span></h2><Link to="/contact" className="mt-12 inline-flex items-center gap-2 border-b border-white pb-2 text-lg text-white">Tell us about it <ArrowUpRight size={18} /></Link></div></div>
     </section>
 
-    <section id="contact" className="bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28">
+    <section id="contact" className="dots-pattern bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28">
       <div className="grid grid-cols-12 gap-8"><p className="eyebrow col-span-12 text-ink/50 md:col-span-3">06 / Contact</p><div className="col-span-12 md:col-span-9"><h2 className="max-w-4xl text-5xl leading-[0.9] tracking-[-0.07em] sm:text-7xl">Let&apos;s build the next chapter together.</h2><a href="mailto:edc@college.edu" className="mt-12 inline-flex items-center gap-2 border-b border-ink pb-2 text-lg">edc@college.edu <ArrowUpRight size={18} /></a></div></div>
     </section>
   </>;
