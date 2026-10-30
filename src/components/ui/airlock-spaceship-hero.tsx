@@ -10,8 +10,8 @@ type AirlockHeroProps = {
   holdDistance?: number;
 };
 
-const DEFAULT_VIDEO = "/assets/airlock-hero.mp4";
-const DEFAULT_POSTER = "/assets/airlock-hero-poster.jpg";
+const DEFAULT_VIDEO = "https://cdn.jsdelivr.net/gh/yuraoak/airlock-hero-assets@main/iss-hero-1080p.mp4";
+const DEFAULT_POSTER = "https://cdn.jsdelivr.net/gh/yuraoak/airlock-hero-assets@main/iss-hero-poster.jpg";
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
@@ -40,10 +40,7 @@ export default function AirlockHero({
     if (!video || !section) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    const effectiveScrubDistance = isMobile ? Math.min(scrubDistance, 1250) : scrubDistance;
-    const effectiveHoldDistance = isMobile ? Math.min(holdDistance, 350) : holdDistance;
-    const totalDistance = effectiveScrubDistance + effectiveHoldDistance;
+    const totalDistance = scrubDistance + holdDistance;
     let duration = 0;
     let target = 0;
     let shown = 0;
@@ -52,27 +49,11 @@ export default function AirlockHero({
     let lockedY = 0;
     let lastY = window.scrollY;
     let touchY = 0;
-    let touchProgress = 0;
     let frame = 0;
-    let mediaReady = false;
-    let seeking = false;
-    let lastRequestedTime = -1;
-
-    const seekTo = (time: number) => {
-      if (!mediaReady || duration <= 0) return;
-      const nextTime = Math.min(time, Math.max(0, duration - 0.04));
-      if (Math.abs(nextTime - lastRequestedTime) < (isMobile ? 0.16 : 0.02)) return;
-      lastRequestedTime = nextTime;
-      if (seeking) return;
-      seeking = true;
-      video.currentTime = nextTime;
-    };
 
     const paint = (progress: number) => {
-      const videoProgress = clamp(progress / (effectiveScrubDistance / totalDistance), 0, 1);
-      if (mediaReady && duration > 0 && video.readyState >= HTMLMediaElement.HAVE_METADATA) {
-        seekTo(videoProgress * duration);
-      }
+      const videoProgress = clamp(progress / (scrubDistance / totalDistance), 0, 1);
+      if (duration) video.currentTime = Math.min(videoProgress * duration, duration - 0.04);
       const openingOpacity = 1 - clamp(videoProgress / 0.35, 0, 1);
       const finalOpacity = clamp((videoProgress - 0.82) / 0.18, 0, 1);
       if (titleRef.current) {
@@ -102,7 +83,6 @@ export default function AirlockHero({
       if (locked) return;
       locked = true;
       released = false;
-      section.style.touchAction = "none";
       lockedY = window.scrollY;
       document.body.style.position = "fixed";
       document.body.style.top = `-${lockedY}px`;
@@ -114,7 +94,6 @@ export default function AirlockHero({
     const release = () => {
       if (!locked) return;
       locked = false;
-      section.style.touchAction = "";
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.left = "";
@@ -131,29 +110,17 @@ export default function AirlockHero({
         release();
         return false;
       }
-      const inputDelta = isMobile ? clamp(delta, -70, 70) : delta;
-      target = clamp(target + inputDelta / totalDistance, 0, 1);
+      target = clamp(target + delta / totalDistance, 0, 1);
       return true;
     };
 
     const onWheel = (event: WheelEvent) => {
       if (consume(event.deltaY)) event.preventDefault();
     };
-    const onTouchStart = (event: TouchEvent) => {
-      touchY = event.touches[0]?.clientY ?? 0;
-      touchProgress = 0;
-    };
+    const onTouchStart = (event: TouchEvent) => { touchY = event.touches[0]?.clientY ?? 0; };
     const onTouchMove = (event: TouchEvent) => {
       const y = event.touches[0]?.clientY ?? touchY;
-      const delta = touchY - y;
-      const remainingGesture = 320 - touchProgress;
-      const acceptedDelta = isMobile
-        ? Math.sign(delta) * Math.min(Math.abs(delta), Math.max(0, remainingGesture))
-        : delta;
-      if (consume(acceptedDelta)) {
-        touchProgress += Math.abs(acceptedDelta);
-        event.preventDefault();
-      }
+      if (consume(touchY - y)) event.preventDefault();
       touchY = y;
     };
     const onKeyDown = (event: KeyboardEvent) => {
@@ -172,14 +139,13 @@ export default function AirlockHero({
       }
     };
     const animate = () => {
-      shown += (target - shown) * (isMobile ? 0.3 : 0.18);
+      shown += (target - shown) * 0.18;
       paint(shown);
       frame = requestAnimationFrame(animate);
     };
 
     const onLoaded = () => {
       duration = video.duration || 0;
-      mediaReady = true;
       setReady(true);
       if (reducedMotion) {
         target = shown = 1;
@@ -187,33 +153,12 @@ export default function AirlockHero({
       }
     };
 
-    const onSeeked = () => {
-      seeking = false;
-      const currentProgress = clamp(shown / (effectiveScrubDistance / totalDistance), 0, 1);
-      seekTo(currentProgress * duration);
-    };
-
-    const onMetadata = () => {
-      duration = video.duration || 0;
-      mediaReady = true;
-    };
-
-    const onError = () => {
-      mediaReady = false;
-      setReady(false);
-    };
-
-    video.addEventListener("loadedmetadata", onMetadata);
     video.addEventListener("loadeddata", onLoaded);
-    video.addEventListener("canplay", onLoaded);
-    video.addEventListener("seeked", onSeeked);
-    video.addEventListener("error", onError);
-    video.load();
     if (!reducedMotion) {
       if (window.scrollY <= section.offsetTop + 1) engage();
       window.addEventListener("wheel", onWheel, { passive: false });
-      section.addEventListener("touchstart", onTouchStart, { passive: true, capture: true });
-      section.addEventListener("touchmove", onTouchMove, { passive: false, capture: true });
+      window.addEventListener("touchstart", onTouchStart, { passive: true });
+      window.addEventListener("touchmove", onTouchMove, { passive: false });
       window.addEventListener("keydown", onKeyDown);
       window.addEventListener("scroll", onScroll, { passive: true });
       frame = requestAnimationFrame(animate);
@@ -221,13 +166,9 @@ export default function AirlockHero({
 
     return () => {
       video.removeEventListener("loadeddata", onLoaded);
-      video.removeEventListener("loadedmetadata", onMetadata);
-      video.removeEventListener("error", onError);
-      video.removeEventListener("canplay", onLoaded);
-      video.removeEventListener("seeked", onSeeked);
       window.removeEventListener("wheel", onWheel);
-      section.removeEventListener("touchstart", onTouchStart, true);
-      section.removeEventListener("touchmove", onTouchMove, true);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(frame);
@@ -237,7 +178,6 @@ export default function AirlockHero({
 
   return (
     <section ref={sectionRef} id="home" className="relative h-[100dvh] w-full overflow-hidden bg-[#05070d]">
-      <img src={posterSrc} alt="" aria-hidden className="absolute inset-0 z-0 h-full w-full object-cover" />
       <video ref={videoRef} src={videoSrc} poster={posterSrc} muted playsInline preload="auto" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ opacity: ready ? 1 : 0, transition: "opacity 0.6s ease" }} />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(5,7,13,.4),transparent_35%,rgba(5,7,13,.6))]" />
       <h1 ref={titleRef} className="absolute inset-0 flex items-center justify-center px-6 text-center text-[clamp(3rem,12vw,10rem)] font-extrabold leading-none tracking-[-0.06em] text-white [text-shadow:0_4px_30px_rgba(0,0,0,.55)]">{title}</h1>
