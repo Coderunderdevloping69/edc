@@ -57,7 +57,7 @@ export default function AirlockHero({
 
     const seekVideo = (time: number) => {
       if (!duration || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
-      const step = isMobile ? 0.25 : 0.04;
+      const step = isMobile ? 0.35 : 0.04;
       const next = Math.min(Math.round(time / step) * step, duration - 0.04);
       if (Math.abs(next - lastSeek) < step) return;
       lastSeek = next;
@@ -152,7 +152,7 @@ export default function AirlockHero({
       }
     };
     const animate = () => {
-      shown += (target - shown) * (isMobile ? 0.28 : 0.18);
+      shown += (target - shown) * (isMobile ? 0.2 : 0.18);
       paint(shown);
       frame = requestAnimationFrame(animate);
     };
