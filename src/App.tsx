@@ -1,5 +1,5 @@
 import { ArrowUpRight, Instagram, Linkedin } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import AirlockHero from "@/components/ui/airlock-spaceship-hero";
 import GhostFibers from "@/components/ui/ghost-fibers";
@@ -80,7 +80,20 @@ function ResourcesPage() {
 }
 
 function ContactPage() {
-  return <><PageIntro number="04" eyebrow="Have an idea?" title="Start something meaningful." /><section className="px-5 pb-32 sm:px-8 md:px-12"><p className="max-w-xl text-lg text-cream/65">Whether you have a question, a collaboration idea, or a venture waiting to begin, we want to hear from you.</p><a href="mailto:edc@college.edu" className="mt-12 inline-flex items-center gap-2 border-b border-white pb-2 text-lg text-white">edc@college.edu <ArrowUpRight size={18} /></a></section></>;
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const subject = encodeURIComponent(`New idea from ${data.get("name")}`);
+    const body = encodeURIComponent(
+      `Name: ${data.get("name")}\nUSN: ${data.get("usn")}\nPhone: ${data.get("phone")}\n\nIdea:\n${data.get("idea")}`,
+    );
+    window.location.href = `mailto:edc@college.edu?subject=${subject}&body=${body}`;
+    setSubmitted(true);
+  };
+
+  return <><PageIntro number="04" eyebrow="Have an idea?" title="Start something meaningful." /><section className="dots-pattern bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28"><div className="grid grid-cols-12 gap-12"><div className="col-span-12 md:col-span-4"><p className="eyebrow text-ink/50">Tell us your idea</p><p className="mt-6 max-w-sm text-lg leading-tight text-ink/65">Have something worth building? Give us the first version. We&apos;ll help you take it further.</p><a href="mailto:edc@college.edu" className="mt-10 inline-flex items-center gap-2 border-b border-ink pb-2 text-lg">edc@college.edu <ArrowUpRight size={18} /></a></div><form onSubmit={handleSubmit} className="col-span-12 md:col-span-7 md:col-start-6"><div className="grid gap-8 sm:grid-cols-2"><label className="flex flex-col gap-2"><span className="eyebrow text-ink/50">Your name</span><input required name="name" type="text" placeholder="Enter your name" className="border-b border-ink/30 bg-transparent px-0 py-3 text-lg outline-none placeholder:text-ink/30 focus:border-ink" /></label><label className="flex flex-col gap-2"><span className="eyebrow text-ink/50">USN</span><input required name="usn" type="text" placeholder="Enter your USN" className="border-b border-ink/30 bg-transparent px-0 py-3 text-lg uppercase outline-none placeholder:text-ink/30 focus:border-ink" /></label></div><label className="mt-8 flex flex-col gap-2"><span className="eyebrow text-ink/50">Phone number</span><input required name="phone" type="tel" inputMode="tel" pattern="[0-9+() -]{7,}" placeholder="Enter your phone number" className="border-b border-ink/30 bg-transparent px-0 py-3 text-lg outline-none placeholder:text-ink/30 focus:border-ink" /></label><label className="mt-8 flex flex-col gap-2"><span className="eyebrow text-ink/50">Your idea</span><textarea required name="idea" rows={5} placeholder="Tell us what you want to create..." className="resize-y border-b border-ink/30 bg-transparent px-0 py-3 text-lg outline-none placeholder:text-ink/30 focus:border-ink" /></label><div className="mt-10 flex flex-wrap items-center gap-5"><button type="submit" className="inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3 text-sm font-medium text-cream transition-transform hover:scale-[1.03]">Send your idea <ArrowUpRight size={18} /></button>{submitted && <p className="text-sm text-ink/60">Your email app should open with the message ready to send.</p>}</div></form></div></section></>;
 }
 
 function HomePage() {
