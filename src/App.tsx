@@ -45,7 +45,7 @@ function Footer() {
 }
 
 function PageIntro({ number, eyebrow, title, children }: { number: string; eyebrow: string; title: string; children?: React.ReactNode }) {
-  return <section className="px-5 pb-20 pt-40 sm:px-8 md:px-12 md:pb-28"><p className="eyebrow text-cream/50">{number} / {eyebrow}</p><h1 className="mt-8 max-w-5xl text-6xl leading-[0.88] tracking-[-0.08em] text-cream sm:text-8xl md:text-[10rem]">{title}</h1>{children}</section>;
+  return <section className="page-intro px-5 pb-20 pt-40 sm:px-8 md:px-12 md:pb-28"><p className="eyebrow page-intro__eyebrow text-cream/50">{number} / {eyebrow}</p><h1 className="page-intro__title mt-8 max-w-5xl text-6xl leading-[0.88] tracking-[-0.08em] text-cream sm:text-8xl md:text-[10rem]">{title}</h1>{children}<span className="page-intro__orb" aria-hidden="true" /></section>;
 }
 
 function EventsPage() {
@@ -71,12 +71,12 @@ function EventsPage() {
 }
 
 function TeamPage() {
-  return <><PageIntro number="02" eyebrow="People behind EDC" title="The people making it happen." /><section className="px-5 pb-28 sm:px-8 md:px-12"><p className="mb-12 max-w-xl text-lg text-cream/65">A team of doers, dreamers, and problem-solvers building the ecosystem we wished we had.</p><div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">{team.map((member) => <article key={member.name}><div className="aspect-square overflow-hidden bg-cream/10"><img src={member.image} alt={member.name} className="h-full w-full object-cover grayscale transition duration-500 hover:grayscale-0" /></div><h3 className="mt-4 text-xl text-cream">{member.name}</h3><p className="eyebrow mt-1 text-cream/50">{member.role}</p></article>)}</div><div className="mt-20 border-t border-cream/20 pt-6"><p className="eyebrow text-cream/50">Our wider collective</p><p className="mt-4 text-3xl tracking-[-0.05em] text-cream">Marketing · Design · Finance · Partnerships · Community</p></div></section></>;
+  return <><PageIntro number="02" eyebrow="People behind EDC" title="The people making it happen." /><section className="page-section px-5 pb-28 sm:px-8 md:px-12"><p className="page-section__lead mb-12 max-w-xl text-lg text-cream/65">A team of doers, dreamers, and problem-solvers building the ecosystem we wished we had.</p><div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">{team.map((member, index) => <article key={member.name} className="team-card" style={{ "--card-delay": `${index * 90}ms` } as React.CSSProperties}><div className="team-card__image aspect-square overflow-hidden bg-cream/10"><img src={member.image} alt={member.name} className="h-full w-full object-cover grayscale transition duration-700 group-hover:scale-105 hover:grayscale-0" /></div><div className="flex items-center justify-between border-b border-cream/20 pb-3 pt-4"><h3 className="text-xl text-cream">{member.name}</h3><ArrowUpRight size={18} className="team-card__arrow text-cream/50" /></div><p className="eyebrow mt-2 text-cream/50">{member.role}</p></article>)}</div><div className="collective-line mt-20 border-t border-cream/20 pt-6"><p className="eyebrow text-cream/50">Our wider collective</p><p className="mt-4 text-3xl tracking-[-0.05em] text-cream">Marketing · Design · Finance · Partnerships · Community</p></div></section></>;
 }
 
 function ResourcesPage() {
   const resources = ["How to find your first customer", "A founder’s guide to asking better questions", "5 books that changed how we build"];
-  return <><PageIntro number="03" eyebrow="Keep exploring" title="A library for the next big idea." /><section className="dots-pattern bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28">{resources.map((title, index) => <a href="#contact" key={title} className="group flex items-center justify-between border-b border-ink/20 py-7"><div><p className="eyebrow mb-3 text-ink/50">0{index + 1} / Journal</p><h2 className="text-2xl tracking-[-0.05em] sm:text-4xl">{title}</h2></div><ArrowUpRight className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" /></a>)}</section></>;
+  return <><PageIntro number="03" eyebrow="Keep exploring" title="A library for the next big idea." /><section className="dots-pattern resources-panel bg-white px-5 py-20 text-ink sm:px-8 md:px-12 md:py-28">{resources.map((title, index) => <a href="#contact" key={title} className="resource-row group flex items-center justify-between border-b border-ink/20 py-7"><div><p className="eyebrow mb-3 text-ink/50">0{index + 1} / Journal</p><h2 className="text-2xl tracking-[-0.05em] sm:text-4xl">{title}</h2></div><ArrowUpRight className="resource-row__arrow transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" /></a>)}</section></>;
 }
 
 function ContactPage() {
