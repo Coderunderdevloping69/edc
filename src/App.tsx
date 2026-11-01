@@ -18,6 +18,7 @@ const pastEvents = [
   { date: "2024", title: "Hackawar", type: "Hackathon", image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1000&q=80", caption: "Build fast, solve boldly, and turn ideas into prototypes." },
   { date: "2024", title: "Idearise", type: "Innovation", image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1000&q=80", caption: "A space for ambitious ideas to take shape." },
   { date: "2024", title: "IPL Auction", type: "Simulation", image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1000&q=80", caption: "Strategy, teamwork, and high-stakes decisions." },
+  { date: "2024", title: "Goal for a Cause", type: "Social impact", image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1000&q=80", caption: "Ideas and action coming together for a meaningful cause." },
 ];
 
 const team = [
