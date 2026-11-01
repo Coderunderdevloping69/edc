@@ -24,6 +24,12 @@ body { margin: 0; min-width: 320px; background: #05070d; }
 .team-card__arrow { transition: transform .4s ease, color .4s ease; }
 .team-card:hover .team-card__arrow { transform: translate(3px,-3px); color: #c5e86c; }
 .collective-line { animation: rise-in .8s .5s both cubic-bezier(.16,1,.3,1); }
+.page-stats { animation: rise-in .8s .15s both cubic-bezier(.16,1,.3,1); }
+.page-stats > div { display: flex; flex-direction: column; gap: .35rem; }
+.page-stats strong { color: #c5e86c; font-size: clamp(2rem, 5vw, 4rem); font-weight: 500; line-height: .8; }
+.page-stats span { color: rgba(229,227,212,.5); font: .65rem "DM Mono", monospace; letter-spacing: .1em; text-transform: uppercase; }
+.resources-panel { min-height: 65vh; }
+.resources-panel > div:first-child { animation: rise-in .8s both cubic-bezier(.16,1,.3,1); }
 .resource-row { position: relative; overflow: hidden; transition: padding-left .45s ease, color .45s ease; }
 .resource-row::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 0; background: #c5e86c; transition: width .45s ease; z-index: 0; }
 .resource-row > * { position: relative; z-index: 1; }
