@@ -21,7 +21,7 @@ export default function PolaroidLineCarousel({ slides, className = "" }: Polaroi
         {loopedSlides.map((slide, index) => (
           <article className="polaroid-marquee__card" key={`${slide.title}-${index}`}>
             <div className="polaroid-marquee__photo">
-              {slide.video ? <video src={slide.video} autoPlay muted loop playsInline preload="metadata" aria-label={slide.title} /> : <img src={slide.image} alt={slide.title} loading="lazy" draggable={false} />}
+              {slide.video ? <video src={slide.video} autoPlay muted loop playsInline preload="none" aria-label={slide.title} /> : <img src={slide.image} alt={slide.title} loading="lazy" decoding="async" draggable={false} />}
             </div>
             <p className="polaroid-marquee__title">{slide.title}</p>
             {slide.caption && <p className="polaroid-marquee__caption">{slide.caption}</p>}
