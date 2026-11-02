@@ -41,6 +41,7 @@ export default function AirlockHero({
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const isAndroid = isMobile && /Android/i.test(navigator.userAgent);
     const effectiveScrubDistance = isMobile ? Math.min(scrubDistance, 850) : scrubDistance;
     const effectiveHoldDistance = isMobile ? Math.min(holdDistance, 160) : holdDistance;
     const totalDistance = effectiveScrubDistance + effectiveHoldDistance;
@@ -56,6 +57,8 @@ export default function AirlockHero({
     let lastSeek = -1;
     let pendingSeek = -1;
     let seeking = false;
+    let androidPlaybackStarted = false;
+    let androidPlaybackEnded = false;
 
     const seekVideo = (time: number) => {
       if (!duration || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
@@ -82,8 +85,10 @@ export default function AirlockHero({
     };
 
     const paint = (progress: number) => {
-      const videoProgress = clamp(progress / (effectiveScrubDistance / totalDistance), 0, 1);
-      if (duration) {
+      const videoProgress = androidPlaybackStarted && duration
+        ? clamp(video.currentTime / duration, 0, 1)
+        : clamp(progress / (effectiveScrubDistance / totalDistance), 0, 1);
+      if (duration && !androidPlaybackStarted && !androidPlaybackEnded) {
         seekVideo(videoProgress * duration);
       }
       const openingOpacity = 1 - clamp(videoProgress / 0.35, 0, 1);
@@ -107,8 +112,28 @@ export default function AirlockHero({
         finalLineRef.current.style.transform = `translate(-50%, calc(-50% + 5rem + ${(1 - finalOpacity) * 20}px))`;
         finalLineRef.current.style.filter = isMobile ? "none" : `blur(${(1 - finalOpacity) * 8}px)`;
       }
-      if (hintRef.current) hintRef.current.style.opacity = progress > 0.001 ? "0" : "1";
-      if (barRef.current) barRef.current.style.transform = `scaleX(${progress})`;
+      if (hintRef.current) hintRef.current.style.opacity = videoProgress > 0.001 ? "0" : "1";
+      if (barRef.current) barRef.current.style.transform = `scaleX(${videoProgress})`;
+    };
+
+    const startAndroidPlayback = () => {
+      if (!isAndroid || androidPlaybackStarted || androidPlaybackEnded || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
+      androidPlaybackStarted = true;
+      video.currentTime = 0;
+      void video.play();
+    };
+
+    const onTimeUpdate = () => {
+      if (androidPlaybackStarted) paint(1);
+    };
+
+    const onEnded = () => {
+      if (!isAndroid) return;
+      androidPlaybackEnded = true;
+      androidPlaybackStarted = false;
+      target = shown = 1;
+      video.pause();
+      paint(1);
     };
 
     const engage = () => {
@@ -138,6 +163,7 @@ export default function AirlockHero({
 
     const consume = (delta: number) => {
       if (!locked) return false;
+      if (delta > 0) startAndroidPlayback();
       if (target >= 1 && shown > 0.98 && delta > 0) {
         release();
         return false;
@@ -196,6 +222,8 @@ export default function AirlockHero({
     video.addEventListener("loadeddata", onLoaded);
     video.addEventListener("loadedmetadata", onMetadata);
     video.addEventListener("seeked", onSeeked);
+    video.addEventListener("timeupdate", onTimeUpdate);
+    video.addEventListener("ended", onEnded);
     video.load();
     if (!reducedMotion) {
       if (window.scrollY <= section.offsetTop + 1) engage();
@@ -211,6 +239,8 @@ export default function AirlockHero({
       video.removeEventListener("loadeddata", onLoaded);
       video.removeEventListener("loadedmetadata", onMetadata);
       video.removeEventListener("seeked", onSeeked);
+      video.removeEventListener("timeupdate", onTimeUpdate);
+      video.removeEventListener("ended", onEnded);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
