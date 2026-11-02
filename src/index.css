@@ -8,6 +8,7 @@
 html { scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; background: #05070d; }
 .site-fibers { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .78; }
+.site-fibers--mobile { opacity: .28; }
 .site-content { position: relative; z-index: 1; background: transparent; }
 .dots-pattern { background-image: radial-gradient(rgba(23, 23, 23, .18) 1px, transparent 1px); background-size: 16px 16px; }
 .page-intro { position: relative; overflow: hidden; }

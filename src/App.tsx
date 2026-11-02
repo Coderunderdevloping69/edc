@@ -156,7 +156,7 @@ function App() {
     return () => media.removeEventListener("change", update);
   }, []);
 
-  return <BrowserRouter>{!isMobile && <div className="site-fibers" aria-hidden="true"><GhostFibers glowColor="#063bef" lineColor="#9bb8ff" secondaryColor="#1431c0" layers={3} twist={1.2} waves={1.2} threads={72} fiberStyle="dots" depthOfField={0.85} hoverEffect="focus" intro mouseInteraction dpr={2} brightness={1.4} glow={1.1} /></div>}<Header /><main className="site-content overflow-hidden"><Routes><Route path="/" element={<HomePage />} /><Route path="/events" element={<EventsPage />} /><Route path="/team" element={<TeamPage />} /><Route path="/resources" element={<ResourcesPage />} /><Route path="/contact" element={<ContactPage />} /></Routes><Footer /></main></BrowserRouter>;
+  return <BrowserRouter><div className={`site-fibers${isMobile ? " site-fibers--mobile" : ""}`} aria-hidden="true"><GhostFibers glowColor="#063bef" lineColor="#9bb8ff" secondaryColor="#1431c0" layers={isMobile ? 1 : 3} twist={1.2} waves={isMobile ? 0.7 : 1.2} threads={isMobile ? 24 : 72} fiberStyle="dots" depthOfField={isMobile ? 0.2 : 0.85} hoverEffect="none" intro mouseInteraction={!isMobile} dpr={isMobile ? 1 : 2} brightness={isMobile ? 0.8 : 1.4} glow={isMobile ? 0.45 : 1.1} particles={isMobile ? 0 : 0.5} /></div><Header /><main className="site-content overflow-hidden"><Routes><Route path="/" element={<HomePage />} /><Route path="/events" element={<EventsPage />} /><Route path="/team" element={<TeamPage />} /><Route path="/resources" element={<ResourcesPage />} /><Route path="/contact" element={<ContactPage />} /></Routes><Footer /></main></BrowserRouter>;
 }
 
 export default App;
