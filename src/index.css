@@ -60,6 +60,7 @@ body { margin: 0; min-width: 320px; background: #05070d; }
 .contact-stats > div { display: flex; flex-direction: column; gap: .35rem; }
 .contact-stats strong { color: #c5e86c; font-size: clamp(2.5rem, 7vw, 5rem); font-weight: 500; line-height: .8; }
 .contact-stats span { color: rgba(229,227,212,.62); font: .68rem "DM Mono", monospace; letter-spacing: .1em; text-transform: uppercase; }
+.contact-page-intro { padding-top: 7rem; padding-bottom: 3rem; }
 .team-hierarchy { position: relative; }
 .team-hierarchy::before { content: ""; position: absolute; left: 1.15rem; top: 0; bottom: 0; border-left: 1px dashed rgba(197,232,108,.45); }
 .team-level { position: relative; display: grid; grid-template-columns: 2.5rem minmax(12rem, 24rem) 1fr auto; align-items: center; gap: 1.5rem; padding: 2.5rem 0; border-top: 1px solid rgba(229,227,212,.16); opacity: 1; transform: none; }
