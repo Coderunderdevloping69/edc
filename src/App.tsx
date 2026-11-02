@@ -24,11 +24,11 @@ const pastEvents = [
 const team = [
   { name: "Priya Gariya", role: "President", image: "/assets/team/member-02.jpeg", linkedin: "https://www.linkedin.com/in/priya-gariya-76350a281/" },
   { name: "Siddharth Priyatam", role: "President", image: "/assets/team/president-02.jpg", linkedin: "https://www.linkedin.com/in/siddharth-priyatam-462632337/" },
-  { name: "EDC Member 01", role: "Core team", image: "/assets/team/member-01.jpeg" },
+  { name: "Saksham Jain", role: "Vice President", image: "/assets/team/member-04.jpeg", linkedin: "https://www.linkedin.com/in/saksham-jain-ab042327b/" },
+  { name: "Rohit Jagri", role: "Core team", image: "/assets/team/member-01.jpeg", linkedin: "https://www.linkedin.com/in/rohithjagri/" },
   { name: "EDC Member 03", role: "Core team", image: "/assets/team/member-03.jpeg" },
-  { name: "EDC Member 04", role: "Vice President", image: "/assets/team/member-04.jpeg" },
-  { name: "EDC Member 05", role: "Core team", image: "/assets/team/member-05.jpeg" },
-  { name: "EDC Member 06", role: "Core team", image: "/assets/team/member-06.jpeg" },
+  { name: "Shivesh Tiwari", role: "Core team", image: "/assets/team/member-05.jpeg", linkedin: "https://www.linkedin.com/in/shivtiw/" },
+  { name: "Hardik Bansal", role: "Core team", image: "/assets/team/member-06.jpeg", linkedin: "https://www.linkedin.com/in/hardikbansal06/" },
 ];
 
 function Header() {
@@ -72,7 +72,7 @@ function EventsPage() {
 }
 
 function TeamPage() {
-  const hierarchy = team.map((member, index) => ({ ...member, role: ["President", "President", "Vice President", "General Secretary", "Events Lead", "Marketing Lead", "Community Lead"][index] }));
+  const hierarchy = team;
   const hierarchyRef = useRef<HTMLDivElement>(null);
   const [hierarchyVisible, setHierarchyVisible] = useState(false);
   useEffect(() => {
