@@ -41,8 +41,7 @@ export default function AirlockHero({
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    const isAndroid = isMobile && /Android/i.test(navigator.userAgent);
-    const useNativeMobilePlayback = isAndroid;
+    const useNativeMobilePlayback = isMobile;
     const effectiveScrubDistance = isMobile ? Math.min(scrubDistance, 850) : scrubDistance;
     const effectiveHoldDistance = isMobile ? Math.min(holdDistance, 160) : holdDistance;
     const totalDistance = effectiveScrubDistance + effectiveHoldDistance;
