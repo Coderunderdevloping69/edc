@@ -20,6 +20,8 @@ const pastEvents = [
   { date: "2024", title: "Idearise", type: "Innovation", image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1000&q=80", caption: "A space for ambitious ideas to take shape." },
   { date: "2024", title: "IPL Auction", type: "Simulation", image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1000&q=80", video: "/assets/events/ipl-auction.mp4", caption: "Strategy, teamwork, and high-stakes decisions." },
   { date: "2024", title: "Goal for a Cause", type: "Social impact", image: "/assets/events/goal-for-a-cause.jpeg", caption: "Ideas and action coming together for a meaningful cause." },
+  { date: "2024", title: "Orientation", type: "Community", image: "/assets/events/orientation.jpeg", caption: "Welcoming new builders into the EDC community." },
+  { date: "2024", title: "Tuff Session", type: "Session", image: "/assets/events/tuff-session.jpeg", caption: "A focused session for learning, sharing, and building together." },
 ];
 
 const team = [
