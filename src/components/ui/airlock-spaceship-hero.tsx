@@ -57,6 +57,7 @@ export default function AirlockHero({
     let lastSeek = -1;
     let pendingSeek = -1;
     let seeking = false;
+    let firstFrameReady = false;
     let androidPlaybackStarted = false;
     let androidPlaybackEnded = false;
 
@@ -74,6 +75,11 @@ export default function AirlockHero({
     };
 
     const onSeeked = () => {
+      if (!firstFrameReady && video.currentTime <= 0.05) {
+        firstFrameReady = true;
+        setReady(true);
+        paint(0);
+      }
       seeking = false;
       if (pendingSeek >= 0) {
         const next = pendingSeek;
@@ -208,7 +214,6 @@ export default function AirlockHero({
       duration = video.duration || 0;
       video.pause();
       video.currentTime = 0;
-      setReady(true);
       if (reducedMotion) {
         target = shown = 1;
         paint(1);
