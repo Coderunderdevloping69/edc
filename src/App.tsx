@@ -8,9 +8,6 @@ import PolaroidLineCarousel from "@/components/ui/polaroid-line-carousel";
 const upcomingEvents = [
   { date: "04 NOV", title: "Bootcamp", detail: "A focused session to build, test, and move faster" },
   { date: "16–17 NOV", title: "Ignation", detail: "Two days of ideas, collaboration, and bold prototypes" },
-  { date: "08 NOV", title: "Startup Weekend", detail: "48 hours to build your idea" },
-  { date: "22 NOV", title: "Founder Files", detail: "An evening with builders" },
-  { date: "06 DEC", title: "Pitch Perfect", detail: "Present. Get feedback. Grow." },
 ];
 
 const pastEvents = [
