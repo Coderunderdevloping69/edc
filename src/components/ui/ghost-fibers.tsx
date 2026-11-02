@@ -578,19 +578,20 @@ const GhostFibers = ({
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const wakeRef = useRef(null);
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
   const settings = {
     glowColor: String(glowColor),
     lineColor: lineColor ? String(lineColor) : '',
     secondaryColor: secondaryColor ? String(secondaryColor) : '',
     gradient: GRADIENTS[gradient] ?? 0,
-    speed: Math.max(0, speed),
+    speed: Math.max(0, isMobile ? Math.min(speed, 0.18) : speed),
     scale: clamp(scale, 0.3, 3),
     rotation: rotation * DEG,
     rollSpeed,
-    layers: clamp(Math.round(layers), 1, 3),
+    layers: clamp(Math.round(isMobile ? 1 : layers), 1, 3),
     waves: Math.max(0, waves),
     twist: Math.max(0, twist),
-    threads: clamp(Math.round(threads), 6, 180),
+    threads: clamp(Math.round(isMobile ? Math.min(threads, 18) : threads), 6, 180),
     volume: clamp(volume, 0, 2),
     spread: clamp(spread, 0.2, 3),
     density: clamp(density, 0.2, 3),
@@ -602,20 +603,20 @@ const GhostFibers = ({
     perspective: clamp(perspective, 0, 1),
     depthOfField: clamp(depthOfField, 0, 2),
     focusDepth: clamp(focusDepth, -1, 1),
-    particles: clamp(particles, 0, 2),
-    sparkle: clamp(sparkle, 0, 2),
-    glow: Math.max(0, glow),
+    particles: clamp(isMobile ? Math.min(particles, 0.1) : particles, 0, 2),
+    sparkle: clamp(isMobile ? Math.min(sparkle, 0.1) : sparkle, 0, 2),
+    glow: Math.max(0, isMobile ? Math.min(glow, 0.35) : glow),
     brightness: Math.max(0, brightness),
     vignette: clamp(vignette, 0, 1),
-    grain: Math.max(0, grain),
-    mouseInteraction,
+    grain: Math.max(0, isMobile ? Math.min(grain, 0.02) : grain),
+    mouseInteraction: isMobile ? false : mouseInteraction,
     hover: HOVER_EFFECTS[hoverEffect] ?? 0,
     mouseStrength: Math.max(0, mouseStrength),
-    pulseOnClick,
-    intro,
+    pulseOnClick: isMobile ? false : pulseOnClick,
+    intro: isMobile ? false : intro,
     lightMode,
     paused,
-    dpr
+    dpr: isMobile ? 1 : dpr
   };
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
