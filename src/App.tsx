@@ -1,6 +1,6 @@
 import { ArrowUpRight, Instagram, Linkedin } from "lucide-react";
-import { FormEvent, useEffect, useRef, useState } from "react";
-import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import { FormEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { BrowserRouter, Link, Route, Routes, useLocation } from "react-router-dom";
 import AirlockHero from "@/components/ui/airlock-spaceship-hero";
 import GhostFibers from "@/components/ui/ghost-fibers";
 import PolaroidLineCarousel from "@/components/ui/polaroid-line-carousel";
@@ -47,6 +47,27 @@ function Footer() {
 
 function PageIntro({ number, eyebrow, title, children, showOrb = true, className = "" }: { number: string; eyebrow: string; title: string; children?: React.ReactNode; showOrb?: boolean; className?: string }) {
   return <section className={`page-intro px-5 pb-20 pt-40 sm:px-8 md:px-12 md:pb-28 ${className}`}><p className="eyebrow page-intro__eyebrow text-cream/50">{number} / {eyebrow}</p><h1 className="page-intro__title mt-8 max-w-5xl text-6xl leading-[0.88] tracking-[-0.08em] text-cream sm:text-8xl md:text-[10rem]">{title}</h1>{children}{showOrb && <span className="page-intro__orb" aria-hidden="true" />}</section>;
+}
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useLayoutEffect(() => {
+    window.history.scrollRestoration = "manual";
+    document.documentElement.style.scrollBehavior = "auto";
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    window.scrollTo(0, 0);
+    const frame = window.requestAnimationFrame(() => {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      window.scrollTo(0, 0);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [pathname]);
+
+  return null;
 }
 
 function EventsPage() {
@@ -207,7 +228,7 @@ function App() {
     return () => media.removeEventListener("change", update);
   }, []);
 
-  return <BrowserRouter><div className={`site-fibers${isMobile ? " site-fibers--mobile" : ""}`} aria-hidden="true"><GhostFibers glowColor="#063bef" lineColor="#9bb8ff" secondaryColor="#1431c0" layers={3} twist={1.2} waves={1.2} threads={72} fiberStyle="dots" depthOfField={0.85} hoverEffect="focus" intro mouseInteraction dpr={2} brightness={1.4} glow={1.1} particles={0.5} /></div><Header /><main className="site-content overflow-hidden"><Routes><Route path="/" element={<HomePage />} /><Route path="/events" element={<EventsPage />} /><Route path="/team" element={<TeamPage />} /><Route path="/resources" element={<ResourcesPage />} /><Route path="/contact" element={<ContactPage />} /></Routes><Footer /></main></BrowserRouter>;
+  return <BrowserRouter><ScrollToTop /><div className={`site-fibers${isMobile ? " site-fibers--mobile" : ""}`} aria-hidden="true"><GhostFibers glowColor="#063bef" lineColor="#9bb8ff" secondaryColor="#1431c0" layers={3} twist={1.2} waves={1.2} threads={72} fiberStyle="dots" depthOfField={0.85} hoverEffect="focus" intro mouseInteraction dpr={2} brightness={1.4} glow={1.1} particles={0.5} /></div><Header /><main className="site-content overflow-hidden"><Routes><Route path="/" element={<HomePage />} /><Route path="/events" element={<EventsPage />} /><Route path="/team" element={<TeamPage />} /><Route path="/resources" element={<ResourcesPage />} /><Route path="/contact" element={<ContactPage />} /></Routes><Footer /></main></BrowserRouter>;
 }
 
 export default App;
