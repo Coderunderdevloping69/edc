@@ -15,10 +15,11 @@ const pastEvents = [
   { date: "18—20 OCT 2024", title: "E-Summit 2024", type: "Summit", image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1000&q=80", caption: "Three days of ideas, pitches, and ambitious builders." },
   { date: "07 SEP 2024", title: "Ideathon", type: "Competition", image: "https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1000&q=80", caption: "A room full of problems worth solving." },
   { date: "14 AUG 2024", title: "Design thinking lab", type: "Workshop", image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1000&q=80", caption: "From first questions to better possibilities." },
-  { date: "2024", title: "Hackawar", type: "Hackathon", image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1000&q=80", caption: "Build fast, solve boldly, and turn ideas into prototypes." },
+  { date: "2024", title: "Hackawar", type: "Hackathon", image: "/assets/events/hackawar.jpeg", caption: "Build fast, solve boldly, and turn ideas into prototypes." },
+  { date: "2024", title: "Prompt & Prototype", type: "Workshop", image: "/assets/events/prompt-and-prototype.jpeg", caption: "Turn a sharp prompt into a prototype worth testing." },
   { date: "2024", title: "Idearise", type: "Innovation", image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1000&q=80", caption: "A space for ambitious ideas to take shape." },
   { date: "2024", title: "IPL Auction", type: "Simulation", image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1000&q=80", video: "/assets/events/ipl-auction.mp4", caption: "Strategy, teamwork, and high-stakes decisions." },
-  { date: "2024", title: "Goal for a Cause", type: "Social impact", image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1000&q=80", video: "/assets/events/goal-for-a-cause.mp4", caption: "Ideas and action coming together for a meaningful cause." },
+  { date: "2024", title: "Goal for a Cause", type: "Social impact", image: "/assets/events/goal-for-a-cause.jpeg", caption: "Ideas and action coming together for a meaningful cause." },
 ];
 
 const team = [
