@@ -120,7 +120,7 @@ export default function AirlockHero({
       if (!isAndroid || androidPlaybackStarted || androidPlaybackEnded || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
       androidPlaybackStarted = true;
       video.currentTime = 0;
-      video.playbackRate = 1.35;
+      video.playbackRate = 1.6;
       void video.play();
     };
 
