@@ -4,7 +4,6 @@ import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import AirlockHero from "@/components/ui/airlock-spaceship-hero";
 import GhostFibers from "@/components/ui/ghost-fibers";
 import PolaroidLineCarousel from "@/components/ui/polaroid-line-carousel";
-import { getSupabaseClient } from "@/lib/supabase";
 
 const upcomingEvents = [
   { date: "08 NOV", title: "Startup Weekend", detail: "48 hours to build your idea" },
@@ -111,16 +110,20 @@ function ContactPage() {
       idea: String(data.get("idea") ?? ""),
     };
     setSubmitError("");
-    let error: { message: string } | null = null;
     try {
-      ({ error } = await getSupabaseClient().from("contact_submissions").insert(submission));
-    } catch (caught) {
-      error = { message: caught instanceof Error ? caught.message : "Contact submission could not be saved." };
-    }
-    if (error) {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submission),
+      });
+      if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        throw new Error(result?.error ?? "Contact submission could not be saved.");
+      }
+    } catch (error) {
       console.error("Could not save contact submission:", error);
       setSubmitted(false);
-      setSubmitError(error.message);
+      setSubmitError(error instanceof Error ? error.message : "Contact submission could not be saved.");
       return;
     }
     const subject = encodeURIComponent(`New idea from ${data.get("name")}`);
