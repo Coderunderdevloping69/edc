@@ -126,7 +126,9 @@ export default function AirlockHero({
       if (!isAndroid || androidPlaybackStarted || androidPlaybackEnded || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
       androidPlaybackStarted = true;
       video.currentTime = 0;
-      video.playbackRate = 1.8;
+      video.playbackRate = 1.35;
+      cancelAnimationFrame(frame);
+      frame = 0;
       void video.play();
     };
 
@@ -205,9 +207,11 @@ export default function AirlockHero({
       }
     };
     const animate = () => {
-      const distance = target - shown;
-      shown = Math.abs(distance) < 0.002 ? target : shown + distance * (isMobile ? 0.48 : 0.28);
-      paint(shown);
+      if (!androidPlaybackStarted) {
+        const distance = target - shown;
+        shown = Math.abs(distance) < 0.002 ? target : shown + distance * (isMobile ? 0.48 : 0.28);
+        paint(shown);
+      }
       frame = requestAnimationFrame(animate);
     };
 
