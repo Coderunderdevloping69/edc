@@ -41,7 +41,7 @@ export default function AirlockHero({
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    const isAndroid = isMobile && /Android/i.test(navigator.userAgent);
+    const useNativeMobilePlayback = isMobile;
     const effectiveScrubDistance = isMobile ? Math.min(scrubDistance, 850) : scrubDistance;
     const effectiveHoldDistance = isMobile ? Math.min(holdDistance, 160) : holdDistance;
     const totalDistance = effectiveScrubDistance + effectiveHoldDistance;
@@ -58,8 +58,8 @@ export default function AirlockHero({
     let pendingSeek = -1;
     let seeking = false;
     let firstFrameReady = false;
-    let androidPlaybackStarted = false;
-    let androidPlaybackEnded = false;
+    let nativePlaybackStarted = false;
+    let nativePlaybackEnded = false;
 
     const seekVideo = (time: number) => {
       if (!duration || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
@@ -91,10 +91,10 @@ export default function AirlockHero({
     };
 
     const paint = (progress: number) => {
-      const videoProgress = androidPlaybackStarted && duration
+      const videoProgress = nativePlaybackStarted && duration
         ? clamp(video.currentTime / duration, 0, 1)
         : clamp(progress / (effectiveScrubDistance / totalDistance), 0, 1);
-      if (duration && !androidPlaybackStarted && !androidPlaybackEnded) {
+      if (duration && !nativePlaybackStarted && !nativePlaybackEnded) {
         seekVideo(videoProgress * duration);
       }
       const openingOpacity = 1 - clamp(videoProgress / 0.35, 0, 1);
@@ -122,26 +122,27 @@ export default function AirlockHero({
       if (barRef.current) barRef.current.style.transform = `scaleX(${videoProgress})`;
     };
 
-    const startAndroidPlayback = () => {
-      if (!isAndroid || androidPlaybackStarted || androidPlaybackEnded || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
-      androidPlaybackStarted = true;
+    const startNativePlayback = () => {
+      if (!useNativeMobilePlayback || nativePlaybackStarted || nativePlaybackEnded || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
+      nativePlaybackStarted = true;
       video.currentTime = 0;
-      video.playbackRate = 1.35;
+      video.playbackRate = 1;
       cancelAnimationFrame(frame);
       frame = 0;
-      void video.play();
+      void video.play().catch(() => {
+        nativePlaybackStarted = false;
+      });
     };
 
     const onTimeUpdate = () => {
-      if (androidPlaybackStarted) paint(1);
+      if (nativePlaybackStarted) paint(1);
     };
 
     const onEnded = () => {
-      if (!isAndroid) return;
-      androidPlaybackEnded = true;
-      androidPlaybackStarted = false;
+      if (!useNativeMobilePlayback) return;
+      nativePlaybackEnded = true;
+      nativePlaybackStarted = false;
       target = shown = 1;
-      video.pause();
       video.playbackRate = 1;
       paint(1);
     };
@@ -173,7 +174,7 @@ export default function AirlockHero({
 
     const consume = (delta: number) => {
       if (!locked) return false;
-      if (delta > 0) startAndroidPlayback();
+      if (delta > 0) startNativePlayback();
       if (target >= 1 && shown > 0.98 && delta > 0) {
         release();
         return false;
@@ -207,7 +208,7 @@ export default function AirlockHero({
       }
     };
     const animate = () => {
-      if (!androidPlaybackStarted) {
+      if (!nativePlaybackStarted) {
         const distance = target - shown;
         shown = Math.abs(distance) < 0.002 ? target : shown + distance * (isMobile ? 0.48 : 0.28);
         paint(shown);
