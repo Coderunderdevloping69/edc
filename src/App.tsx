@@ -44,8 +44,8 @@ function Footer() {
   return <footer className="border-t border-cream/20 px-5 py-8 sm:px-8 md:px-12"><div className="flex flex-col justify-between gap-8 md:flex-row md:items-end"><div><img src="/assets/ecell-logo.png" alt="ECELL" className="h-auto w-40 brightness-0 invert" /><p className="eyebrow mt-4 text-cream/50">EDC · Ideas start here.</p></div><div className="flex items-center gap-5 text-cream/60"><Link to="/">Home</Link><Link to="/events">Events</Link><Link to="/team">Team</Link><a href="https://www.instagram.com/ecell_ramaiah/" target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={18} /></a><a href="https://www.linkedin.com/company/ecell-rit/" target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={18} /></a></div></div><p className="eyebrow mt-12 text-cream/30">© 2024 EDC</p></footer>;
 }
 
-function PageIntro({ number, eyebrow, title, children }: { number: string; eyebrow: string; title: string; children?: React.ReactNode }) {
-  return <section className="page-intro px-5 pb-20 pt-40 sm:px-8 md:px-12 md:pb-28"><p className="eyebrow page-intro__eyebrow text-cream/50">{number} / {eyebrow}</p><h1 className="page-intro__title mt-8 max-w-5xl text-6xl leading-[0.88] tracking-[-0.08em] text-cream sm:text-8xl md:text-[10rem]">{title}</h1>{children}<span className="page-intro__orb" aria-hidden="true" /></section>;
+function PageIntro({ number, eyebrow, title, children, showOrb = true }: { number: string; eyebrow: string; title: string; children?: React.ReactNode; showOrb?: boolean }) {
+  return <section className="page-intro px-5 pb-20 pt-40 sm:px-8 md:px-12 md:pb-28"><p className="eyebrow page-intro__eyebrow text-cream/50">{number} / {eyebrow}</p><h1 className="page-intro__title mt-8 max-w-5xl text-6xl leading-[0.88] tracking-[-0.08em] text-cream sm:text-8xl md:text-[10rem]">{title}</h1>{children}{showOrb && <span className="page-intro__orb" aria-hidden="true" />}</section>;
 }
 
 function EventsPage() {
@@ -71,7 +71,22 @@ function EventsPage() {
 }
 
 function TeamPage() {
-  return <><PageIntro number="02" eyebrow="People behind EDC" title="The people making it happen." /><section className="page-section px-5 pb-28 sm:px-8 md:px-12"><div className="page-stats mb-16 grid grid-cols-3 border-y border-cream/20 py-5"><div><strong>06</strong><span>Core members</span></div><div><strong>05</strong><span>Working teams</span></div><div><strong>∞</strong><span>Big ideas</span></div></div><p className="page-section__lead mb-12 max-w-xl text-lg text-cream/65">A team of doers, dreamers, and problem-solvers building the ecosystem we wished we had.</p><div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">{team.map((member, index) => <article key={member.name} className="team-card" style={{ "--card-delay": `${index * 90}ms` } as React.CSSProperties}><div className="team-card__image aspect-square overflow-hidden bg-cream/10"><img src={member.image} alt={member.name} className="h-full w-full object-cover grayscale transition duration-700 group-hover:scale-105 hover:grayscale-0" /></div><div className="flex items-center justify-between border-b border-cream/20 pb-3 pt-4"><h3 className="text-xl text-cream">{member.name}</h3><ArrowUpRight size={18} className="team-card__arrow text-cream/50" /></div><p className="eyebrow mt-2 text-cream/50">{member.role}</p></article>)}</div><div className="collective-line mt-20 border-t border-cream/20 pt-6"><p className="eyebrow text-cream/50">Our wider collective</p><p className="mt-4 text-3xl tracking-[-0.05em] text-cream">Marketing · Design · Finance · Partnerships · Community</p></div></section></>;
+  const hierarchy = team.map((member, index) => ({ ...member, role: ["President", "Vice President", "General Secretary", "Events Lead", "Marketing Lead", "Community Lead"][index] }));
+  const hierarchyRef = useRef<HTMLDivElement>(null);
+  const [hierarchyVisible, setHierarchyVisible] = useState(false);
+  useEffect(() => {
+    const element = hierarchyRef.current;
+    if (!element) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setHierarchyVisible(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.15 });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  return <><PageIntro number="02" eyebrow="People behind EDC" title="The people making it happen." showOrb={false}><div className="team-map" aria-label="EDC leadership structure"><span className="team-map__line" /><span className="team-map__label">EDC / 2026</span><strong>One idea.</strong><strong>Many hands.</strong><small>Scroll to meet the team ↓</small></div></PageIntro><section className="page-section px-5 pb-28 sm:px-8 md:px-12"><div className="page-stats mb-16 grid grid-cols-3 border-y border-cream/20 py-5"><div><strong>06</strong><span>Core members</span></div><div><strong>05</strong><span>Working teams</span></div><div><strong>∞</strong><span>Big ideas</span></div></div><p className="page-section__lead mb-16 max-w-xl text-lg text-cream/65">A team of doers, dreamers, and problem-solvers building the ecosystem we wished we had.</p><div ref={hierarchyRef} className={`team-hierarchy${hierarchyVisible ? " team-hierarchy--visible" : ""}`}>{hierarchy.map((member, index) => <article key={member.name} className="team-level" style={{ "--card-delay": `${index * 120}ms` } as React.CSSProperties}><span className="team-level__number">0{index + 1}</span><div className="team-card__image aspect-square overflow-hidden bg-cream/10"><img src={member.image} alt={member.name} className="h-full w-full object-cover grayscale transition duration-700 hover:scale-105 hover:grayscale-0" /></div><div className="team-level__copy"><p className="eyebrow text-lime">{member.role}</p><h3 className="mt-3 text-2xl text-cream sm:text-4xl">{member.name}</h3><p className="mt-3 max-w-sm text-sm leading-relaxed text-cream/55">{index === 0 ? "Setting the direction and keeping the bigger picture in view." : index === 1 ? "Turning direction into momentum and keeping the team moving." : "Helping ideas become real through focused, collaborative work."}</p></div><ArrowUpRight size={22} className="team-card__arrow text-cream/50" /></article>)}</div><div className="collective-line mt-20 border-t border-cream/20 pt-6"><p className="eyebrow text-cream/50">Our wider collective</p><p className="mt-4 text-3xl tracking-[-0.05em] text-cream">Marketing · Design · Finance · Partnerships · Community</p></div></section></>;
 }
 
 function ResourcesPage() {
