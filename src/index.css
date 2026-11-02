@@ -49,11 +49,13 @@ body { margin: 0; min-width: 320px; background: #05070d; }
 .team-page__video { z-index: 0; object-fit: cover; opacity: .8; }
 .team-page__overlay { z-index: 1; background: linear-gradient(180deg, rgba(5,7,13,.6), rgba(5,7,13,.78) 42%, #05070d 100%); }
 .team-page__content { position: relative; z-index: 2; }
+.team-page__content .page-intro, .team-page__content .page-intro h1, .team-page__content .page-intro p { color: #e5e3d4; }
 .contact-page { position: relative; overflow: hidden; }
 .contact-page__video, .contact-page__overlay { position: absolute; inset: 0 0 auto; width: 100%; height: 100%; pointer-events: none; }
 .contact-page__video { z-index: 0; object-fit: cover; opacity: .48; }
 .contact-page__overlay { z-index: 1; background: linear-gradient(180deg, rgba(5,7,13,.58), rgba(5,7,13,.82) 45%, rgba(5,7,13,.94)); }
 .contact-page__content { position: relative; z-index: 2; }
+.contact-page__content .page-intro, .contact-page__content .page-intro h1, .contact-page__content .page-intro p { color: #e5e3d4; }
 .contact-stats { animation: rise-in .8s .25s both cubic-bezier(.16,1,.3,1); }
 .contact-stats > div { display: flex; flex-direction: column; gap: .35rem; }
 .contact-stats strong { color: #c5e86c; font-size: clamp(2.5rem, 7vw, 5rem); font-weight: 500; line-height: .8; }
