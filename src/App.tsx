@@ -23,7 +23,7 @@ const pastEvents = [
 
 const team = [
   { name: "Priya Gariya", role: "President · EM, Operations, PR & SP", image: "/assets/team/member-02.jpeg", linkedin: "https://www.linkedin.com/in/priya-gariya-76350a281/" },
-  { name: "Siddharth Priyatam", role: "President · Upstarters & Finance", image: "/assets/team/president-02.jpg", linkedin: "https://www.linkedin.com/in/siddharth-priyatam-462632337/" },
+  { name: "Siddharth Priyatam", role: "President · Upstarters & Finance", image: "/assets/team/siddharth-priyatam.jpg", linkedin: "https://www.linkedin.com/in/siddharth-priyatam-462632337/" },
   { name: "Saksham Jain", role: "Vice President · Social Media & Marketing", image: "/assets/team/member-04.jpeg", linkedin: "https://www.linkedin.com/in/saksham-jain-ab042327b/" },
   { name: "Hardik Bansal", role: "Head of Documentation", image: "/assets/team/member-06.jpeg", linkedin: "https://www.linkedin.com/in/hardikbansal06/" },
   { name: "Shashwath Prabhu", role: "Head of Design", image: "/assets/team/member-03.jpeg", linkedin: "https://www.linkedin.com/in/shashwath-prabhu-1b144827a" },
