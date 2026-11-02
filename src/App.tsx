@@ -4,6 +4,7 @@ import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import AirlockHero from "@/components/ui/airlock-spaceship-hero";
 import GhostFibers from "@/components/ui/ghost-fibers";
 import PolaroidLineCarousel from "@/components/ui/polaroid-line-carousel";
+import { getSupabaseClient } from "@/lib/supabase";
 
 const upcomingEvents = [
   { date: "08 NOV", title: "Startup Weekend", detail: "48 hours to build your idea" },
@@ -98,10 +99,30 @@ function ResourcesPage() {
 
 function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const submission = {
+      name: String(data.get("name") ?? ""),
+      usn: String(data.get("usn") ?? ""),
+      phone: String(data.get("phone") ?? ""),
+      idea: String(data.get("idea") ?? ""),
+    };
+    setSubmitError("");
+    let error: { message: string } | null = null;
+    try {
+      ({ error } = await getSupabaseClient().from("contact_submissions").insert(submission));
+    } catch (caught) {
+      error = { message: caught instanceof Error ? caught.message : "Contact submission could not be saved." };
+    }
+    if (error) {
+      console.error("Could not save contact submission:", error);
+      setSubmitted(false);
+      setSubmitError(error.message);
+      return;
+    }
     const subject = encodeURIComponent(`New idea from ${data.get("name")}`);
     const body = encodeURIComponent(
       `Name: ${data.get("name")}\nUSN: ${data.get("usn")}\nPhone: ${data.get("phone")}\n\nIdea:\n${data.get("idea")}`,
@@ -110,7 +131,7 @@ function ContactPage() {
     setSubmitted(true);
   };
 
-  return <><PageIntro number="04" eyebrow="Have an idea?" title="Start something meaningful." showOrb={false} className="contact-page-intro" /><section className="contact-stats grid grid-cols-2 gap-6 border-y border-ink/20 bg-white px-5 py-12 text-ink sm:px-8 md:px-12"><div><strong>07</strong><span>Active startups</span></div><div><strong>15</strong><span>Startups since lifetime</span></div></section><section className="contact-form-section px-5 py-20 sm:px-8 md:px-12 md:py-28"><div className="grid grid-cols-12 gap-12"><div className="col-span-12 md:col-span-4"><p className="eyebrow text-ink/50">Tell us your idea</p><p className="mt-6 max-w-sm text-lg leading-tight text-ink/65">Have something worth building? Give us the first version. We&apos;ll help you take it further.</p><a href="mailto:admin@ecellramaiah.in" className="mt-10 inline-flex items-center gap-2 border-b border-ink pb-2 text-lg">admin@ecellramaiah.in <ArrowUpRight size={18} /></a></div><form onSubmit={handleSubmit} className="col-span-12 md:col-span-7 md:col-start-6"><div className="grid gap-8 sm:grid-cols-2"><label className="flex flex-col gap-2"><span className="eyebrow text-ink/50">Your name</span><input required name="name" type="text" placeholder="Enter your name" className="border-b border-ink/30 bg-transparent px-0 py-3 text-lg outline-none placeholder:text-ink/30 focus:border-ink" /></label><label className="flex flex-col gap-2"><span className="eyebrow text-ink/50">USN</span><input required name="usn" type="text" placeholder="Enter your USN" className="border-b border-ink/30 bg-transparent px-0 py-3 text-lg uppercase outline-none placeholder:text-ink/30 focus:border-ink" /></label></div><label className="mt-8 flex flex-col gap-2"><span className="eyebrow text-ink/50">Phone number</span><input required name="phone" type="tel" inputMode="tel" pattern="[0-9+() -]{7,}" placeholder="Enter your phone number" className="border-b border-ink/30 bg-transparent px-0 py-3 text-lg outline-none placeholder:text-ink/30 focus:border-ink" /></label><label className="mt-8 flex flex-col gap-2"><span className="eyebrow text-ink/50">Your idea</span><textarea required name="idea" rows={5} placeholder="Tell us what you want to create..." className="resize-y border-b border-ink/30 bg-transparent px-0 py-3 text-lg outline-none placeholder:text-ink/30 focus:border-ink" /></label><div className="mt-10 flex flex-wrap items-center gap-5"><button type="submit" className="inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3 text-sm font-medium text-cream transition-transform hover:scale-[1.03]">Send your idea <ArrowUpRight size={18} /></button>{submitted && <p className="text-sm text-ink/60">Your email app should open with the message ready to send.    </p>}</div></form></div></section></>;
+  return <><PageIntro number="04" eyebrow="Have an idea?" title="Start something meaningful." showOrb={false} className="contact-page-intro" /><section className="contact-stats grid grid-cols-2 gap-6 border-y border-ink/20 bg-white px-5 py-12 text-ink sm:px-8 md:px-12"><div><strong>07</strong><span>Active startups</span></div><div><strong>15</strong><span>Startups since lifetime</span></div></section><section className="contact-form-section px-5 py-20 sm:px-8 md:px-12 md:py-28"><div className="grid grid-cols-12 gap-12"><div className="col-span-12 md:col-span-4"><p className="eyebrow text-ink/50">Tell us your idea</p><p className="mt-6 max-w-sm text-lg leading-tight text-ink/65">Have something worth building? Give us the first version. We&apos;ll help you take it further.</p><a href="mailto:admin@ecellramaiah.in" className="mt-10 inline-flex items-center gap-2 border-b border-ink pb-2 text-lg">admin@ecellramaiah.in <ArrowUpRight size={18} /></a></div><form onSubmit={handleSubmit} className="col-span-12 md:col-span-7 md:col-start-6"><div className="grid gap-8 sm:grid-cols-2"><label className="flex flex-col gap-2"><span className="eyebrow text-ink/50">Your name</span><input required name="name" type="text" placeholder="Enter your name" className="border-b border-ink/30 bg-transparent px-0 py-3 text-lg outline-none placeholder:text-ink/30 focus:border-ink" /></label><label className="flex flex-col gap-2"><span className="eyebrow text-ink/50">USN</span><input required name="usn" type="text" placeholder="Enter your USN" className="border-b border-ink/30 bg-transparent px-0 py-3 text-lg uppercase outline-none placeholder:text-ink/30 focus:border-ink" /></label></div><label className="mt-8 flex flex-col gap-2"><span className="eyebrow text-ink/50">Phone number</span><input required name="phone" type="tel" inputMode="tel" pattern="[0-9+() -]{7,}" placeholder="Enter your phone number" className="border-b border-ink/30 bg-transparent px-0 py-3 text-lg outline-none placeholder:text-ink/30 focus:border-ink" /></label><label className="mt-8 flex flex-col gap-2"><span className="eyebrow text-ink/50">Your idea</span><textarea required name="idea" rows={5} placeholder="Tell us what you want to create..." className="resize-y border-b border-ink/30 bg-transparent px-0 py-3 text-lg outline-none placeholder:text-ink/30 focus:border-ink" /></label><div className="mt-10 flex flex-wrap items-center gap-5"><button type="submit" className="inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3 text-sm font-medium text-cream transition-transform hover:scale-[1.03]">Send your idea <ArrowUpRight size={18} /></button>{submitted && <p className="text-sm text-ink/60">Your email app should open with the message ready to send.</p>}{submitError && <p className="text-sm text-red-300">{submitError}</p>}</div></form></div></section></>;
 }
 
 function HomePage() {
