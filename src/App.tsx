@@ -22,13 +22,13 @@ const pastEvents = [
 ];
 
 const team = [
-  { name: "EDC Member 01", role: "Core team", image: "/assets/team/member-01.jpeg" },
   { name: "Priya Gariya", role: "President", image: "/assets/team/member-02.jpeg", linkedin: "https://www.linkedin.com/in/priya-gariya-76350a281/" },
+  { name: "Siddharth Priyatam", role: "President", image: "/assets/team/president-02.jpg", linkedin: "https://www.linkedin.com/in/siddharth-priyatam-462632337/" },
+  { name: "EDC Member 01", role: "Core team", image: "/assets/team/member-01.jpeg" },
   { name: "EDC Member 03", role: "Core team", image: "/assets/team/member-03.jpeg" },
   { name: "EDC Member 04", role: "Vice President", image: "/assets/team/member-04.jpeg" },
   { name: "EDC Member 05", role: "Core team", image: "/assets/team/member-05.jpeg" },
   { name: "EDC Member 06", role: "Core team", image: "/assets/team/member-06.jpeg" },
-  { name: "Siddharth Priyatam", role: "President", image: "/assets/team/president-02.jpg", linkedin: "https://www.linkedin.com/in/siddharth-priyatam-462632337/" },
 ];
 
 function Header() {
