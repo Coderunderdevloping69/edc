@@ -26,13 +26,13 @@ const pastEvents = [
 ];
 
 const team = [
-  { name: "Priya Gariya", role: "President", image: "/assets/team/member-02.jpeg", linkedin: "https://www.linkedin.com/in/priya-gariya-76350a281/" },
-  { name: "Siddharth Priyatam", role: "President", image: "/assets/team/president-02.jpg", linkedin: "https://www.linkedin.com/in/siddharth-priyatam-462632337/" },
-  { name: "Saksham Jain", role: "Vice President", image: "/assets/team/member-04.jpeg", linkedin: "https://www.linkedin.com/in/saksham-jain-ab042327b/" },
-  { name: "Rohit Jagri", role: "Core team", image: "/assets/team/member-01.jpeg", linkedin: "https://www.linkedin.com/in/rohithjagri/" },
-  { name: "EDC Member 03", role: "Core team", image: "/assets/team/member-03.jpeg" },
-  { name: "Shivesh Tiwari", role: "Core team", image: "/assets/team/member-05.jpeg", linkedin: "https://www.linkedin.com/in/shivtiw/" },
-  { name: "Hardik Bansal", role: "Core team", image: "/assets/team/member-06.jpeg", linkedin: "https://www.linkedin.com/in/hardikbansal06/" },
+  { name: "Priya Gariya", role: "President · EM, Operations, PR & SP", image: "/assets/team/member-02.jpeg", linkedin: "https://www.linkedin.com/in/priya-gariya-76350a281/" },
+  { name: "Siddharth Priyatam", role: "President · Upstarters & Finance", image: "/assets/team/president-02.jpg", linkedin: "https://www.linkedin.com/in/siddharth-priyatam-462632337/" },
+  { name: "Saksham Jain", role: "Vice President · Social Media & Marketing", image: "/assets/team/member-04.jpeg", linkedin: "https://www.linkedin.com/in/saksham-jain-ab042327b/" },
+  { name: "Hardik Bansal", role: "Head of Documentation", image: "/assets/team/member-06.jpeg", linkedin: "https://www.linkedin.com/in/hardikbansal06/" },
+  { name: "Shashwath Prabhu", role: "Head of Design", image: "/assets/team/member-03.jpeg", linkedin: "https://www.linkedin.com/in/shashwath-prabhu-1b144827a" },
+  { name: "Shivesh Tiwari", role: "Head of IT", image: "/assets/team/member-05.jpeg", linkedin: "https://www.linkedin.com/in/shivtiw/" },
+  { name: "Rohit Jagri", role: "Head of Corporate & Publicity", image: "/assets/team/member-01.jpeg", linkedin: "https://www.linkedin.com/in/rohithjagri/" },
 ];
 
 function Header() {
