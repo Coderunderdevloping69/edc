@@ -51,7 +51,7 @@ body { margin: 0; min-width: 320px; background: #05070d; }
 .team-page__content { position: relative; z-index: 2; }
 .team-page__content .page-intro, .team-page__content .page-intro h1, .team-page__content .page-intro p { color: #e5e3d4; }
 .contact-page { position: relative; overflow: hidden; }
-.contact-page__video, .contact-page__overlay { position: absolute; inset: 0 0 auto; width: 100%; height: 100%; pointer-events: none; }
+.contact-page__video, .contact-page__overlay { position: absolute; inset: 0 0 auto; width: 100%; height: 82vh; pointer-events: none; }
 .contact-page__video { z-index: 0; object-fit: cover; opacity: .48; }
 .contact-page__overlay { z-index: 1; background: linear-gradient(180deg, rgba(5,7,13,.58), rgba(5,7,13,.82) 45%, rgba(5,7,13,.94)); }
 .contact-page__content { position: relative; z-index: 2; }
